@@ -1,0 +1,29 @@
+{
+  "name": "tooot-push",
+  "version": "1.0.0",
+  "author": "xmflsct <me@xmflsct.com>",
+  "license": "MIT",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "postinstall": "patch-package",
+    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
+    "dev": "miniflare dist/index.mjs --watch --do-persist",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "buffer": "6.0.3",
+    "create-ecdh": "4.0.4"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.2.0",
+    "@types/node": "^16.11.12",
+    "esbuild": "^0.14.2",
+    "knex": "^0.95.14",
+    "miniflare": "^1.4.1",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
+    "sqlite3": "^5.0.2",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
+  }
+}

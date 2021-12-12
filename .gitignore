@@ -1,0 +1,4 @@
+/packages/**/node_modules
+/packages/**/.mf
+/packages/**/.env
+/packages/**/dist

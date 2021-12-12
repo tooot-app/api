@@ -1,0 +1,27 @@
+{
+  "name": "tooot-translate",
+  "version": "1.0.0",
+  "author": "xmflsct <me@xmflsct.com>",
+  "license": "MIT",
+  "module": "./dist/index.mjs",
+  "scripts": {
+    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=browser --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
+    "dev": "miniflare dist/index.mjs --watch",
+    "deploy": "wrangler publish"
+  },
+  "dependencies": {
+    "sanitize-html": "^2.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^3.2.0",
+    "esbuild": "^0.14.2",
+    "miniflare": "^1.4.1",
+    "typescript": "^4.5.2"
+  },
+  "browser": {
+    "tty": false,
+    "fs": false,
+    "path": false,
+    "url": false
+  }
+}
