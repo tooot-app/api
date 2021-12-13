@@ -1,3 +1,4 @@
+import Toucan from 'toucan-js'
 import checkCache from './checkCache'
 import sanitizeBody from './sanitizeBody'
 // import useDeepL from './useDeepL'
@@ -21,6 +22,7 @@ export type Env = {
   ENVIRONMENT: 'production' | 'development'
   IBM_KEY: string
   DEEPL_KEY: string
+  SENTRY_DSN: string
 }
 
 export type BodyContent = {
@@ -30,8 +32,39 @@ export type BodyContent = {
 }
 
 export default {
-  async fetch(request: Request, env: Env, context: any) {
-    return await handleErrors(async () => {
+  async fetch(request: Request, env: Env, context: ExecutionContext) {
+    const sentry = new Toucan({
+      dsn: env.SENTRY_DSN,
+      environment: env.ENVIRONMENT,
+      debug: env.ENVIRONMENT === 'development',
+      context,
+      request,
+      allowedHeaders: [
+        'user-agent',
+        'cf-challenge',
+        'accept-encoding',
+        'accept-language',
+        'cf-ray',
+        'content-length',
+        'content-type',
+        'x-real-ip',
+        'host'
+      ],
+      allowedSearchParams: /(.*)/,
+      rewriteFrames: {
+        root: '/'
+      }
+    })
+    const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
+    sentry.setTag('colo', colo)
+    const ipAddress =
+      request.headers.get('cf-connecting-ip') ||
+      request.headers.get('x-forwarded-for')
+    const userAgent = request.headers.get('user-agent') || ''
+    sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
+    sentry.setRequestBody(request.clone().json())
+
+    return await handleErrors(sentry, async () => {
       const body: BodyContent = await request.json()
 
       if (

@@ -13,7 +13,7 @@ const useIBM = async ({
   text: string[]
 }) => {
   const translation: {
-    detected_language: string
+    detected_language?: string
     translations: { translation: string }[]
   } = await (
     await fetch(
@@ -28,6 +28,10 @@ const useIBM = async ({
       }
     )
   ).json()
+
+  if (!translation.translations || !Array.isArray(translation.translations)) {
+    throw new Error(translation.toString())
+  }
 
   return {
     provider: 'IBM',

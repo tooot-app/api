@@ -10,7 +10,8 @@
     "deploy": "wrangler publish"
   },
   "dependencies": {
-    "sanitize-html": "^2.6.0"
+    "sanitize-html": "^2.6.0",
+    "toucan-js": "^2.5.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.2.0",

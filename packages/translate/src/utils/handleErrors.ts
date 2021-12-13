@@ -1,21 +1,34 @@
-const handleErrors = async (func: Function) => {
-  let response: Response
+import Toucan from 'toucan-js'
+
+const handleErrors = async (
+  sentry: Toucan,
+  func: Function
+): Promise<Response> => {
+  let response: Response | void = undefined
+
   try {
     response = await func()
   } catch (err) {
+    sentry.captureException(err)
+
     let message: string
     if (typeof err === 'string') {
       message = err.toUpperCase()
     } else if (err instanceof Error) {
       message = err.toString()
     } else {
-      message = 'Unknown error'
+      // @ts-ignore
+      message = err?.message || 'Unknown error'
     }
     console.warn(message)
 
-    return new Response(message, { status: 500 })
+    response = new Response(message, { status: 500 })
   } finally {
-    return response
+    if (response) {
+      return response
+    } else {
+      return new Response(null, { status: 200 })
+    }
   }
 }
 

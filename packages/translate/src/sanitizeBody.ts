@@ -10,9 +10,12 @@ const sanitizeBody = (body: BodyContent): BodyContent => {
         body.source = undefined
         break
       default:
-        body.source = body.source?.slice(0, 2)
+        body.source = body.source.slice(0, 2)
         break
     }
+  }
+  if (body.target) {
+    body.target = body.target.slice(0, 2)
   }
 
   body.text = body.text.map(t =>
