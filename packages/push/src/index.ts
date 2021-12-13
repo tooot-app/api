@@ -108,7 +108,7 @@ export default {
       request.headers.get('x-forwarded-for')
     const userAgent = request.headers.get('user-agent') || ''
     sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-    sentry.setRequestBody(request.clone().json())
+    // sentry.setRequestBody(request.clone().json())
 
     return await handleErrors(sentry, async () => {
       const path = new URL(request.url).pathname.slice(1).split('/')

@@ -62,7 +62,7 @@ export class Device {
       request.headers.get('x-forwarded-for')
     const userAgent = request.headers.get('user-agent') || ''
     sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-    sentry.setRequestBody(request.clone().json())
+    // sentry.setRequestBody(request.clone().json())
 
     return await handleErrors(sentry, async () => {
       const path = new URL(request.url).pathname.slice(1).split('/')
@@ -172,6 +172,7 @@ export class Device {
               }
             }
           })
+          return new Response()
 
         case 'register2':
           const dataRegister2 = await request.json<{
@@ -200,6 +201,7 @@ export class Device {
             errorCounts: 0,
             connectedTimestamp: new Date().getTime()
           })
+          return new Response()
 
         case 'unregister':
           const dataUnregister = await request.json<{
@@ -216,6 +218,8 @@ export class Device {
             accounts: existingAccounts,
             connectedTimestamp: new Date().getTime()
           })
+          return new Response()
+
         default:
           return new Response('Unknown request.', { status: 404 })
       }
