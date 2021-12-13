@@ -16,15 +16,15 @@ const updateDecode = async ({
         keys?: { public: string; private: string; auth: string }
       }
     | undefined = undefined
-  let uniqueName: string | undefined = undefined
+  let device: string | undefined = undefined
   let type: 'new' | 'legacy' | undefined = undefined
   try {
-    const thePath = parsePath(request.url)
-    uniqueName = thePath.uniqueName
+    const { device: tempDevice } = parsePath(request.url)
+    device = tempDevice
     type = 'new'
   } catch {}
 
-  if (!uniqueName) {
+  if (!device) {
     try {
       body = await request.json<{
         expoToken: string
@@ -33,23 +33,23 @@ const updateDecode = async ({
         keys?: { public: string; private: string; auth: string }
       }>()
       if (!body.expoToken || !body.instanceUrl || !body.accountId) {
-        throw new Error('Body data error')
+        return new Response('[updateDecode] Data error', { status: 400 })
       }
-      uniqueName = `${body.expoToken}/${body.instanceUrl}/${body.accountId}`
+      device = body.expoToken
       type = 'legacy'
     } catch {}
   }
 
-  if (!uniqueName) {
-    throw new Error('Data error')
+  if (!device) {
+    return new Response('[updateDecode] Data error', { status: 400 })
   }
 
   const durableObject =
     env.ENVIRONMENT === 'production'
-      ? env.TOOOT_PUSH_ENDPOINT
-      : env.TOOOT_PUSH_ENDPOINT_DEV
+      ? env.TOOOT_PUSH_DEVICE
+      : env.TOOOT_PUSH_DEVICE_DEV
 
-  const id = durableObject.idFromName(uniqueName)
+  const id = durableObject.idFromName(device)
   const obj = durableObject.get(id)
   switch (type) {
     case 'new':
@@ -57,15 +57,20 @@ const updateDecode = async ({
       break
     case 'legacy':
       if (!body) {
-        throw new Error('Data error')
+        return new Response('[updateDecode] Data error', { status: 400 })
       }
-      await obj.fetch(request.url, {
-        method: 'POST',
-        body: JSON.stringify({ auth: body.keys?.auth ? body.keys.auth : null })
-      })
+      await obj.fetch(
+        `https://example.com/push/update-decode/${body.expoToken}/${body.instanceUrl}/${body.accountId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            auth: body.keys?.auth ? body.keys.auth : null
+          })
+        }
+      )
       break
     default:
-      throw new Error('Data error')
+      return new Response('[updateDecode] Data error', { status: 400 })
   }
 }
 

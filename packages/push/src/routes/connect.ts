@@ -1,5 +1,4 @@
 import { Env } from '..'
-import parsePath from '../utils/parsePath'
 
 const connect = async ({
   request,
@@ -13,20 +12,17 @@ const connect = async ({
   let body:
     | {
         expoToken: string
-        instanceUrl: string
-        accountId: string
-        keys?: { public: string; private: string; auth: string }
       }
     | undefined = undefined
-  let uniqueName: string | undefined = undefined
+  let device: string | undefined = undefined
   let type: 'new' | 'legacy' | undefined = undefined
   try {
-    const thePath = parsePath(request.url)
-    uniqueName = thePath.uniqueName
+    const path = new URL(request.url).pathname.slice(1).split('/')
+    device = path[2]
     type = 'new'
   } catch {}
 
-  if (!uniqueName) {
+  if (!device) {
     try {
       body = await request.json<{
         expoToken: string
@@ -34,34 +30,40 @@ const connect = async ({
         accountId: string
         keys?: { public: string; private: string; auth: string }
       }>()
-      if (!body.expoToken || !body.instanceUrl || !body.accountId) {
-        throw new Error('Body data error')
+      if (!body.expoToken) {
+        return new Response('[connect] Missing Expo token', { status: 403 })
       }
-      uniqueName = `${body.expoToken}/${body.instanceUrl}/${body.accountId}`
+      device = body.expoToken
       type = 'legacy'
     } catch {}
   }
 
-  if (!uniqueName) {
-    throw new Error('Data error')
+  if (!device) {
+    return new Response('[connect] Data error', { status: 400 })
   }
 
   const cacheKey =
     type === 'new'
       ? request.url
-      : `https://api.tooot.app/push/connect/${uniqueName}`
+      : `https://api.tooot.app/push/connect/${device}`
   const cache = caches.default
   const response = await cache.match(cacheKey)
 
   if (!response) {
     const durableObject =
       env.ENVIRONMENT === 'production'
-        ? env.TOOOT_PUSH_ENDPOINT
-        : env.TOOOT_PUSH_ENDPOINT_DEV
+        ? env.TOOOT_PUSH_DEVICE
+        : env.TOOOT_PUSH_DEVICE_DEV
 
-    const id = durableObject.idFromName(uniqueName)
+    const id = durableObject.idFromName(device)
     const obj = durableObject.get(id)
-    await obj.fetch(request.clone())
+    const resDO = await obj.fetch(request.url)
+
+    if (resDO.status !== 200) {
+      return new Response('Connect signal failed', {
+        status: resDO.status
+      })
+    }
 
     const responseToCache = new Response(null, {
       status: 200,

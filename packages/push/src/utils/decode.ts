@@ -109,7 +109,6 @@ const decode = async ({
   const message = JSON.parse(
     Buffer.Buffer.from(result).toString('utf-8').substring(2)
   )
-  console.log(message)
   return message
 }
 

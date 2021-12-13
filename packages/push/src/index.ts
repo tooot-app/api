@@ -1,15 +1,18 @@
+import Toucan from 'toucan-js'
 import connect from './routes/connect'
 import migration from './routes/migration'
 import register1 from './routes/register1'
 import register2 from './routes/register2'
 import send from './routes/send'
+import subscribe from './routes/subscribe'
 import universal from './routes/universal'
+import unregister from './routes/unregister'
 import updateDecode from './routes/updateDecode'
 import handleErrors from './utils/handleErrors'
 
 //// CLIENT REQUEST
 
-// -> GET /connect/:expoToken/:instanceUrl/:accountId
+// -> GET /connect/:expoToken
 // <- cached
 // 200
 
@@ -41,96 +44,129 @@ import handleErrors from './utils/handleErrors'
 // <- cached
 // 200
 
-export { Endpoint } from './durableObjects/endpoint'
+export { Device } from './durableObjects/device'
 
 export type Env =
   | {
       ENVIRONMENT: 'production'
+      SENTRY_DSN: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string
       KEY_PUBLIC: string
       MIGRATION_KEY: string
       // Durable Objects
-      TOOOT_PUSH_ENDPOINT: DurableObjectNamespace
-      // KV
-      TOOOT_PUSH_LEGACY: KVNamespace
+      TOOOT_PUSH_DEVICE: DurableObjectNamespace
     }
   | {
       ENVIRONMENT: 'development'
+      SENTRY_DSN: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string
       KEY_PUBLIC: string
       MIGRATION_KEY: string
       // Durable Objects
-      TOOOT_PUSH_ENDPOINT_DEV: DurableObjectNamespace
-      // KV
-      TOOOT_PUSH_LEGACY_DEV: KVNamespace
+      TOOOT_PUSH_DEVICE_DEV: DurableObjectNamespace
     }
 
 export default {
   async fetch(request: Request, env: Env, context: any) {
-    const path = new URL(request.url).pathname.slice(1).split('/')
-
-    switch (path[1]) {
-      case 'connect':
-        if (request.method !== 'GET') {
-          return new Response(null, { status: 405 })
-        }
-        return await handleErrors(async () => {
-          return await connect({ request, env, context })
-        })
-      case 'subscribe':
-        if (request.method !== 'POST') {
-          return new Response(null, { status: 405 })
-        }
-        return await handleErrors(async () => {
-          return await universal({ request, env })
-        })
-      case 'unsubscribe':
-        if (request.method !== 'DELETE') {
-          return new Response(null, { status: 405 })
-        }
-        return await handleErrors(async () => {
-          return await universal({ request, env })
-        })
-      case 'update-decode':
-        if (request.method !== 'PUT' && request.method !== 'POST') {
-          return new Response(null, { status: 405 })
-        }
-        return await handleErrors(async () => {
-          return await updateDecode({ request, env })
-        })
-      case 'send':
-        if (request.method !== 'POST') {
-          return new Response(null, { status: 405 })
-        }
-        return await handleErrors(async () => {
-          return await send({ request, env, context })
-        })
-      // Migration
-      case 'migration':
-        if (request.method !== 'GET') {
-          return new Response(null, { status: 405 })
-        }
-        if (path[2] !== env.MIGRATION_KEY) {
-          return new Response(null, { status: 403 })
-        }
-        return await handleErrors(async () => {
-          return await migration({ request, env })
-        })
-      // Legacy
-      case 'register1':
-        return await handleErrors(async () => {
-          return await register1({ request, env })
-        })
-        break
-      case 'register2':
-        return await handleErrors(async () => {
-          return await register2({ request, env })
-        })
-        break
-      default:
-        return new Response(null, { status: 404 })
+    if (
+      !env.SENTRY_DSN ||
+      !env.KEY_PUBLIC ||
+      !env.KEY_PRIVATE ||
+      !env.EXPO_ACCESS_TOKEN_PUSH
+    ) {
+      return new Response('Missing environment variables', { status: 500 })
     }
+
+    const sentry = new Toucan({
+      dsn: env.SENTRY_DSN,
+      environment: env.ENVIRONMENT,
+      debug: env.ENVIRONMENT === 'development',
+      context,
+      request,
+      allowedHeaders: [
+        'user-agent',
+        'cf-challenge',
+        'accept-encoding',
+        'accept-language',
+        'cf-ray',
+        'content-length',
+        'content-type',
+        'x-real-ip',
+        'host'
+      ],
+      allowedSearchParams: /(.*)/,
+      rewriteFrames: {
+        root: '/'
+      }
+    })
+    const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
+    sentry.setTag('colo', colo)
+    const ipAddress =
+      request.headers.get('cf-connecting-ip') ||
+      request.headers.get('x-forwarded-for')
+    const userAgent = request.headers.get('user-agent') || ''
+    sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
+    sentry.setRequestBody(request.clone().json())
+
+    return await handleErrors(sentry, async () => {
+      const path = new URL(request.url).pathname.slice(1).split('/')
+
+      switch (path[1]) {
+        case 'connect':
+          if (request.method !== 'GET' && request.method !== 'POST') {
+            return new Response(null, { status: 405 })
+          }
+          return await connect({ request, env, context })
+
+        case 'subscribe':
+          if (request.method !== 'POST') {
+            return new Response(null, { status: 405 })
+          }
+          return await subscribe({ request, env })
+
+        case 'unsubscribe':
+          if (request.method !== 'DELETE') {
+            return new Response(null, { status: 405 })
+          }
+          return await universal({ request, env })
+
+        case 'update-decode':
+          if (request.method !== 'PUT' && request.method !== 'POST') {
+            return new Response(null, { status: 405 })
+          }
+          return await updateDecode({ request, env })
+
+        case 'send':
+          if (request.method !== 'POST') {
+            return new Response(null, { status: 405 })
+          }
+          return await send({ request, env, context })
+
+        // Migration
+        case 'migration':
+          if (request.method !== 'GET') {
+            return new Response(null, { status: 405 })
+          }
+          if (path[2] !== env.MIGRATION_KEY) {
+            return new Response(null, { status: 403 })
+          }
+          return await migration({ request, env })
+
+        // Legacy
+        case 'register1':
+          return await register1({ request, env })
+
+        case 'register2':
+          return await register2({ request, env })
+
+        case 'unregister':
+          return await unregister({ request, env })
+
+        default:
+          return new Response(null, { status: 404 })
+      }
+    })
   }
 }

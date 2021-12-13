@@ -1,5 +1,6 @@
 import Buffer from 'buffer/'
 import { Env } from '..'
+import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
 import parsePath from '../utils/parsePath'
 import pushToExpo from '../utils/pushToExpo'
@@ -13,12 +14,10 @@ const send = async ({
   env: Env
   context: any
 }) => {
-  const { uniqueName, expoToken, instanceUrl, accountId } = parsePath(
-    request.url
-  )
+  const { device, instanceUrl, accountId } = parsePath(request.url)
 
   if (!request.body) {
-    throw new Error('[send] Request body empty')
+    return new Response('[send] Request body empty', { status: 400 })
   }
 
   const headers = Object.fromEntries(request.headers) as {
@@ -27,49 +26,54 @@ const send = async ({
   }
 
   if (!headers['crypto-key']) {
-    throw new Error('[send] Are you a legit server?')
+    return new Response('[send] Are you a legit server?', { status: 403 })
   }
 
   const regexServerKey = new RegExp(/dh=.*;p256ecdsa=(.*)/)
   const getServerKey = headers['crypto-key'].match(regexServerKey)
   if (!getServerKey || !getServerKey[1]) {
-    throw new Error('[send] Cannot find serverKey in crypto-key header')
+    return new Response('[send] Cannot find serverKey in crypto-key header', {
+      status: 400
+    })
   }
 
   const regexCryptoKey = new RegExp(/dh=(.*);p256ecdsa=/)
   const getCryptoKey = headers['crypto-key'].match(regexCryptoKey)
   if (!getCryptoKey || !getCryptoKey[1]) {
-    throw new Error('[send] Cannot find crypto key in crypto-key header')
+    return new Response('[send] Cannot find crypto key in crypto-key header', {
+      status: 403
+    })
   }
   const regexEncryption = new RegExp(/salt=(.*)/)
   const getEncryption = headers.encryption.match(regexEncryption)
   if (!getEncryption || !getEncryption[1]) {
-    throw new Error('[send] Cannot find encryption key in header')
+    return new Response('[send] Cannot find encryption key in header', {
+      status: 403
+    })
   }
 
   const durableObject =
     env.ENVIRONMENT === 'production'
-      ? env.TOOOT_PUSH_ENDPOINT
-      : env.TOOOT_PUSH_ENDPOINT_DEV
+      ? env.TOOOT_PUSH_DEVICE
+      : env.TOOOT_PUSH_DEVICE_DEV
 
-  const id = durableObject.idFromName(uniqueName)
+  const id = durableObject.idFromName(device)
   const obj = durableObject.get(id)
-  const stored: {
-    accountFull: string
-    serverKey: string
-    auth: string | null
-  } = await (await obj.fetch(request.clone())).json()
+  const stored: Account = await (await obj.fetch(request.clone())).json()
 
   if (`${getServerKey[1]}=` !== stored.serverKey) {
-    throw new Error(
-      '[send] serverKey in crypto-key header does not match record'
+    return new Response(
+      '[send] serverKey in crypto-key header does not match record',
+      {
+        status: 403
+      }
     )
   }
 
-  if (!stored.auth) {
+  if (!stored.auth && !stored.legacyKeys?.auth) {
     await pushToExpo(context, env.EXPO_ACCESS_TOKEN_PUSH, {
       context: {
-        expoToken,
+        expoToken: device,
         instanceUrl,
         accountId,
         accountFull: stored.accountFull
@@ -91,15 +95,32 @@ const send = async ({
     }
     const bodyStream = await readAllChunks(request.body)
     if (!bodyStream) {
-      throw new Error('[send] Cannot read body stream')
+      return new Response('[send] Cannot read body stream', {
+        status: 500
+      })
+    }
+
+    let tempPublic: string
+    let tempPrivate: string
+    let tempAuth: string
+    if (stored.auth) {
+      tempPublic = env.KEY_PUBLIC
+      tempPrivate = env.KEY_PRIVATE
+      tempAuth = stored.auth
+    } else if (stored.legacyKeys) {
+      tempPublic = stored.legacyKeys.public
+      tempPrivate = stored.legacyKeys.private
+      tempAuth = stored.legacyKeys.auth
+    } else {
+      return new Response('[send] No auth key found', { status: 500 })
     }
 
     const message = await decode({
       body: Buffer.Buffer.concat(bodyStream),
       keys: {
-        auth: stored.auth,
-        private: env.KEY_PRIVATE,
-        public: env.KEY_PUBLIC,
+        auth: tempAuth,
+        private: tempPrivate,
+        public: tempPublic,
         crypto: getCryptoKey[1],
         encryption: getEncryption[1]
       }
@@ -107,7 +128,7 @@ const send = async ({
 
     await pushToExpo(context, env.EXPO_ACCESS_TOKEN_PUSH, {
       context: {
-        expoToken,
+        expoToken: device,
         instanceUrl,
         accountId,
         accountFull: stored.accountFull

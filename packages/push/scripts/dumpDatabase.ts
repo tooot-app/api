@@ -1,9 +1,9 @@
 import fs from 'fs'
 import { Knex, knex } from 'knex'
-import { ExpoData } from '../src/durableObjects/expo'
+import { DeviceState } from '../src/durableObjects/device'
 
 type DB_Expo = {
-  expoToekn: string
+  expoToken: string
   connectedTimestamp: Date
   errorCounts: number
 }
@@ -27,24 +27,45 @@ const config: Knex.Config = {
 const knexInstance = knex(config)
 
 const app = async () => {
+  const expos = await knexInstance<DB_Expo>('expo_token').select('*')
   const accounts = await knexInstance<DB_Account>('server_and_account').select(
     '*'
   )
 
-  const newData: {
-    uniqueName: string
-    data: Omit<ExpoData, 'errorCounts' | 'connectedTimestamp'>
-  }[] = accounts.map(account => ({
-    uniqueName: `${account.expoTokenExpoToken}/${account.instanceUrl}/${account.accountId}`,
-    data: {
-      accountFull: account.accountFull,
-      serverKey: account.serverKey,
-      auth: null,
-      legacyKeys: account.keys ? JSON.parse(account.keys) : null
-    }
-  }))
+  const data: { device: string; accounts: DeviceState['accounts'] }[] = expos
+    .map(expo => ({
+      device: expo.expoToken,
+      accounts: accounts
+        .filter(account => account.expoTokenExpoToken === expo.expoToken)
+        .reduce<{
+          [k: string]: {
+            accountFull: string
+            serverKey: string
+            auth: string | undefined
+            legacyKeys:
+              | {
+                  public: string
+                  private: string
+                  auth: string
+                }
+              | undefined
+          }
+        }>((account, value) => {
+          const uniqueAccount = `${value.instanceUrl}/${value.accountId}`
+          if (!account.hasOwnProperty(uniqueAccount)) {
+            account[uniqueAccount] = {
+              accountFull: value.accountFull,
+              serverKey: value.serverKey,
+              auth: undefined,
+              legacyKeys: value.keys ? JSON.parse(value.keys) : undefined
+            }
+          }
+          return account
+        }, {})
+    }))
+    .filter(d => Object.keys(d.accounts).length > 0)
 
-  fs.writeFile('./scripts/output.json', JSON.stringify(newData), err => {
+  fs.writeFile('./scripts/output.json', JSON.stringify(data), err => {
     if (err) {
       console.error(err)
       return

@@ -1,29 +1,25 @@
 import { Env } from '..'
+import parsePath from '../utils/parsePath'
 
-const register2 = async ({ request, env }: { request: Request; env: Env }) => {
+const subscribe = async ({ request, env }: { request: Request; env: Env }) => {
   const body = await request.json<{
-    expoToken: string
-    instanceUrl: string
-    accountId: string
+    accountFull: string
     serverKey: string
-    removeKeys: boolean
+    auth: string | void
   }>()
-  if (
-    !body.expoToken ||
-    !body.instanceUrl ||
-    !body.accountId ||
-    !body.serverKey ||
-    typeof body.removeKeys !== 'boolean'
-  ) {
-    return new Response('[register2] Data error', { status: 400 })
+
+  if (!body.accountFull || !body.serverKey) {
+    return new Response('[subscribe] Data error', { status: 400 })
   }
+
+  const { device } = parsePath(request.url)
 
   const durableObject =
     env.ENVIRONMENT === 'production'
       ? env.TOOOT_PUSH_DEVICE
       : env.TOOOT_PUSH_DEVICE_DEV
 
-  const id = durableObject.idFromName(body.expoToken)
+  const id = durableObject.idFromName(device)
   const obj = durableObject.get(id)
   const resDO = await obj.fetch(request.url, {
     method: 'POST',
@@ -36,4 +32,4 @@ const register2 = async ({ request, env }: { request: Request; env: Env }) => {
   }
 }
 
-export default register2
+export default subscribe

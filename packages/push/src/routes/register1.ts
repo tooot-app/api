@@ -14,7 +14,7 @@ const register1 = async ({ request, env }: { request: Request; env: Env }) => {
     !body.accountId ||
     !body.accountFull
   ) {
-    throw new Error('Body data error')
+    return new Response('[register1] Data error', { status: 400 })
   }
 
   const endpoint = new URL(
@@ -29,17 +29,21 @@ const register1 = async ({ request, env }: { request: Request; env: Env }) => {
 
   const durableObject =
     env.ENVIRONMENT === 'production'
-      ? env.TOOOT_PUSH_ENDPOINT
-      : env.TOOOT_PUSH_ENDPOINT_DEV
+      ? env.TOOOT_PUSH_DEVICE
+      : env.TOOOT_PUSH_DEVICE_DEV
 
-  const uniqueName = `${body.expoToken}/${body.instanceUrl}/${body.accountId}`
-  const id = durableObject.idFromName(uniqueName)
+  const id = durableObject.idFromName(body.expoToken)
   const obj = durableObject.get(id)
-  await obj.fetch(request.url, {
+  const resDO = await obj.fetch(request.url, {
     method: 'POST',
-    body: JSON.stringify({ accountFull: body.accountFull, auth })
+    body: JSON.stringify({ ...body, auth })
   })
-  console.log('responding')
+  if (resDO.status !== 200) {
+    return new Response('Connect signal failed', {
+      status: resDO.status
+    })
+  }
+
   return new Response(
     JSON.stringify({
       endpoint,
