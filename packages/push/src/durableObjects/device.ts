@@ -76,7 +76,7 @@ export class Device {
         case 'connect':
           existingAccounts = (await this.state.storage.get('accounts')) || {}
           if (Object.keys(existingAccounts).length === 0) {
-            return new Response(null, { status: 400 })
+            return new Response(null, { status: 404 })
           }
           await this.state.storage.put(
             'connectedTimestamp',

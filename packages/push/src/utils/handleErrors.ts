@@ -9,7 +9,7 @@ const handleErrors = async (
   try {
     response = await func()
   } catch (err) {
-    sentry.captureException(err)
+    // sentry.captureException(err)
 
     let message: string
 

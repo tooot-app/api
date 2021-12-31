@@ -99,6 +99,22 @@ export default {
       allowedSearchParams: /(.*)/,
       rewriteFrames: {
         root: '/'
+      },
+      // @ts-ignore
+      beforeSend: (event: Error) => {
+        if (
+          event instanceof SyntaxError &&
+          event.message.includes('JSON at position')
+        ) {
+          const random = Math.floor(Math.random() * 100)
+          if (random < 10) {
+            return event
+          } else {
+            return null
+          }
+        } else {
+          return event
+        }
       }
     })
     const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
