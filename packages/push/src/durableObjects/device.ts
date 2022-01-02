@@ -130,7 +130,7 @@ export class Device {
           accountPointer = `${path[3]}/${path[4]}`
           const accounts = await this.state.storage.get<{
             [hash: string]: Account
-          }>('accounts')
+          }>('accounts', { allowConcurrency: true })
           if (!accounts || !accounts[accountPointer]) {
             return new Response('Could not find corresponding account.', {
               status: 404
