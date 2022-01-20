@@ -138,18 +138,6 @@ export class Device {
           }
           return new Response(JSON.stringify(accounts[accountPointer]))
 
-        // Migration
-        case 'migration':
-          const accountsMigration: DeviceState['accounts'] =
-            await request.json()
-
-          await this.state.storage.put({
-            accounts: accountsMigration,
-            errorCounts: 0,
-            connectedTimestamp: new Date().getTime()
-          })
-          return new Response()
-
         // Legacy
         case 'register1':
           const dataRegister1 = await request.json<{

@@ -1,6 +1,5 @@
 import Toucan from 'toucan-js'
 import connect from './routes/connect'
-import migration from './routes/migration'
 import register1 from './routes/register1'
 import register2 from './routes/register2'
 import send from './routes/send'
@@ -159,16 +158,6 @@ export default {
             return new Response(null, { status: 405 })
           }
           return await send({ request, env, context })
-
-        // Migration
-        case 'migration':
-          if (request.method !== 'GET') {
-            return new Response(null, { status: 405 })
-          }
-          if (path[2] !== env.MIGRATION_KEY) {
-            return new Response(null, { status: 403 })
-          }
-          return await migration({ request, env })
 
         // Legacy
         case 'register1':
