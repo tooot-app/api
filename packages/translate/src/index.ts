@@ -62,7 +62,7 @@ export default {
       request.headers.get('x-forwarded-for')
     const userAgent = request.headers.get('user-agent') || ''
     sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-    sentry.setRequestBody(request.clone().json())
+    sentry.setExtras({ body: request.clone().text() })
 
     return await handleErrors(sentry, async () => {
       const body: BodyContent = await request.json()
