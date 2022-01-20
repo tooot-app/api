@@ -9,7 +9,9 @@ const handleErrors = async (
   try {
     response = await func()
   } catch (err) {
-    // sentry.captureException(err)
+    if (Math.random() < 0.01) {
+      sentry.captureException(err)
+    }
 
     let message: string
 

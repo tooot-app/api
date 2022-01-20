@@ -98,22 +98,6 @@ export default {
       allowedSearchParams: /(.*)/,
       rewriteFrames: {
         root: '/'
-      },
-      // @ts-ignore
-      beforeSend: (event: Error) => {
-        if (
-          event instanceof SyntaxError &&
-          event.message.includes('JSON at position')
-        ) {
-          const random = Math.floor(Math.random() * 100)
-          if (random < 10) {
-            return event
-          } else {
-            return null
-          }
-        } else {
-          return event
-        }
       }
     })
     const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
@@ -123,7 +107,6 @@ export default {
       request.headers.get('x-forwarded-for')
     const userAgent = request.headers.get('user-agent') || ''
     sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-    // sentry.setRequestBody(request.clone().json())
 
     return await handleErrors(sentry, async () => {
       const path = new URL(request.url).pathname.slice(1).split('/')
@@ -157,7 +140,7 @@ export default {
           if (request.method !== 'POST') {
             return new Response(null, { status: 405 })
           }
-          return await send({ request, env, context })
+          return await send({ request, env, context, sentry })
 
         // Legacy
         case 'register1':
