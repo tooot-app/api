@@ -135,7 +135,7 @@ const send = async ({
         status: 400
       })
     }
-    sentry.setRequestBody(bodyStream.toString())
+    sentry.setRequestBody(Buffer.Buffer.concat(bodyStream).toString())
 
     const message = await decode({
       body: Buffer.Buffer.concat(bodyStream),

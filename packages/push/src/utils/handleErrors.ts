@@ -9,29 +9,22 @@ const handleErrors = async (
   try {
     response = await func()
   } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown error'
+    console.warn(message)
+
+    if (message.includes('Decryption failed')) {
+      sentry.setTag('status', 400)
+      response = new Response(message, { status: 400 })
+    } else {
+      sentry.setTag('status', 500)
+      response = new Response(message, { status: 500 })
+    }
+
     if (Math.random() < 0.01) {
       sentry.captureException(err)
     }
-
-    let message: string
-
-    if (typeof err === 'string') {
-      message = err.toUpperCase()
-    } else if (err instanceof Error) {
-      message = err.toString()
-    } else {
-      // @ts-ignore
-      message = err?.message || 'Unknown error'
-    }
-    console.warn(message)
-
-    response = new Response(message, { status: 500 })
   } finally {
-    if (response) {
-      return response
-    } else {
-      return new Response(null, { status: 200 })
-    }
+    return response || new Response(null, { status: 200 })
   }
 }
 
