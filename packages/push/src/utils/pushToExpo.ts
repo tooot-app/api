@@ -16,7 +16,7 @@ export type Message = {
   }
 }
 
-const pushToExpo = async (context: any, token: string, message: Message) => {
+const pushToExpo = async (token: string, message: Message) => {
   let toPush
 
   if (message.details) {
@@ -52,19 +52,17 @@ const pushToExpo = async (context: any, token: string, message: Message) => {
     }
   }
 
-  context.waitUntil(
-    fetch('https://exp.host/--/api/v2/push/send', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        host: 'exp.host',
-        accept: 'application/json',
-        'accept-encoding': 'gzip, deflate',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(toPush)
-    })
-  )
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      host: 'exp.host',
+      accept: 'application/json',
+      'accept-encoding': 'gzip, deflate',
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(toPush)
+  })
 }
 
 export default pushToExpo

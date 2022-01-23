@@ -7,12 +7,13 @@
   "scripts": {
     "postinstall": "patch-package",
     "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
-    "dev": "miniflare dist/index.mjs --watch --do-persist",
+    "dev": "miniflare dist/index.mjs --debug --watch --do-persist",
     "deploy": "wrangler publish"
   },
   "dependencies": {
     "buffer": "6.0.3",
     "create-ecdh": "4.0.4",
+    "itty-router": "^2.4.10",
     "toucan-js": "^2.5.0"
   },
   "devDependencies": {

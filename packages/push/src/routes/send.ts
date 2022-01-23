@@ -1,32 +1,19 @@
 import Buffer from 'buffer/'
-import Toucan from 'toucan-js'
-import { Env } from '..'
+import { DurableObjectDevice, Env, HeadersSend, ParamsSend } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
-import parsePath from '../utils/parsePath'
 import pushToExpo from '../utils/pushToExpo'
 
-const send = async ({
-  request,
-  env,
-  context,
-  sentry
-}: {
-  request: Request
-  env: Env
-  context: any
-  sentry: Toucan
-}) => {
-  const { device, instanceUrl, accountId } = parsePath(request.url)
-
+const send = async (
+  request: Request & DurableObjectDevice & ParamsSend,
+  env: Env,
+  context: ExecutionContext
+): Promise<Response> => {
   if (!request.body) {
     return new Response('[send] Request body empty', { status: 400 })
   }
 
-  const headers = Object.fromEntries(request.headers) as {
-    'crypto-key': string
-    encryption: string
-  }
+  const headers = Object.fromEntries(request.headers) as HeadersSend
 
   if (!headers['crypto-key']) {
     return new Response('[send] Are you a legit server?', { status: 403 })
@@ -55,14 +42,11 @@ const send = async ({
     })
   }
 
-  const durableObject =
-    env.ENVIRONMENT === 'production'
-      ? env.TOOOT_PUSH_DEVICE
-      : env.TOOOT_PUSH_DEVICE_DEV
-
-  const id = durableObject.idFromName(device)
-  const obj = durableObject.get(id)
-  const stored: Account = await (await obj.fetch(request.clone())).json()
+  const resDO = await request.durableObject.fetch(request.clone())
+  if (resDO.status !== 200) {
+    return resDO
+  }
+  const stored: Account = await resDO.json()
 
   if (`${getServerKey[1]}=` !== stored.serverKey) {
     return new Response(
@@ -74,14 +58,14 @@ const send = async ({
   }
 
   if (!stored.auth && !stored.legacyKeys?.auth) {
-    await pushToExpo(context, env.EXPO_ACCESS_TOKEN_PUSH, {
-      context: {
-        expoToken: device,
-        instanceUrl,
-        accountId,
-        accountFull: stored.accountFull
-      }
-    })
+    context.waitUntil(
+      pushToExpo(env.EXPO_ACCESS_TOKEN_PUSH, {
+        context: {
+          ...request.params,
+          accountFull: stored.accountFull
+        }
+      })
+    )
   } else {
     let tempPublic: string
     let tempPrivate: string
@@ -112,6 +96,13 @@ const send = async ({
           encryption: getEncryption[1]
         }
       })
+      context.waitUntil(
+        (async () => {
+          await new Promise(() =>
+            setTimeout(() => console.log('This is being waited on'), 2000)
+          )
+        })()
+      )
       return new Response(JSON.stringify(message), {
         headers: { 'Content-Type': 'application/json' }
       })
@@ -135,7 +126,6 @@ const send = async ({
         status: 400
       })
     }
-    sentry.setRequestBody(Buffer.Buffer.concat(bodyStream).toString())
 
     const message = await decode({
       body: Buffer.Buffer.concat(bodyStream),
@@ -148,16 +138,18 @@ const send = async ({
       }
     })
 
-    await pushToExpo(context, env.EXPO_ACCESS_TOKEN_PUSH, {
-      context: {
-        expoToken: device,
-        instanceUrl,
-        accountId,
-        accountFull: stored.accountFull
-      },
-      details: message
-    })
+    context.waitUntil(
+      pushToExpo(env.EXPO_ACCESS_TOKEN_PUSH, {
+        context: {
+          ...request.params,
+          accountFull: stored.accountFull
+        },
+        details: message
+      })
+    )
   }
+
+  return new Response()
 }
 
 export default send
