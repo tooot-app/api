@@ -23,14 +23,11 @@ jobs:
         with:
           node-version: '16'
       - name: -- Step 3 -- Publish
-        uses: cloudflare/wrangler-action@1.3.0
         env:
-          VERSION: ${{ github.sha }}
-        with:
-          wranglerVersion: '1'
-          apiToken: ${{ secrets.CF_API_TOKEN }}
-          environment: ${{ steps.branch.outputs.branch }}
-          workingDirectory: './packages/${{ matrix.package }}'
+          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+        working-directory: './packages/${{ matrix.package }}'
+        run: yarn deploy --env ${{ steps.branch.outputs.branch }}
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
         env:
