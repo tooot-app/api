@@ -5,13 +5,13 @@ zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 compatibility_date = "2021-12-04"
 workers_dev = false
 
-vars = { ENVIRONMENT = "candidate" }
-
 [build]
 command = "yarn && yarn build"
 [build.upload]
 format = "modules"
 main = "./index.mjs"
+
+vars = { ENVIRONMENT = "development" }
 
 [env.candidate]
 route = "api-candidate.tooot.app/translate"
