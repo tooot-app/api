@@ -19,7 +19,7 @@ import handleErrors from './utils/handleErrors'
 // }
 
 export type Env = {
-  ENVIRONMENT: 'production' | 'development'
+  ENVIRONMENT: 'development' | 'candidate' | 'release'
   IBM_KEY: string
   DEEPL_KEY: string
   SENTRY_DSN: string

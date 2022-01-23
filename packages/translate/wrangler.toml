@@ -1,4 +1,4 @@
-name = "tooot-translate-development"
+name = "tooot-translate-candidate"
 type = "javascript"
 account_id = "4b99fe044748e20b67286e12a4f239fb"
 zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
@@ -6,7 +6,7 @@ compatibility_date = "2021-12-04"
 workers_dev = false
 
 route = "api-candidate.tooot.app/translate"
-vars = { ENVIRONMENT = "development" }
+vars = { ENVIRONMENT = "candidate" }
 
 [build]
 command = "yarn && yarn build"
@@ -14,10 +14,10 @@ command = "yarn && yarn build"
 format = "modules"
 main = "./index.mjs"
 
-[env.production]
+[env.release]
 name = "tooot-translate"
 route = "api.tooot.app/translate"
-vars = { ENVIRONMENT = "production" }
+vars = { ENVIRONMENT = "release" }
 
 [miniflare]
 cache_persist = "./.mf/cache"

@@ -44,7 +44,7 @@ export { Device } from './durableObjects/device'
 
 export type Env =
   | {
-      ENVIRONMENT: 'production'
+      ENVIRONMENT: 'release'
       SENTRY_DSN: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string
@@ -54,7 +54,7 @@ export type Env =
       TOOOT_PUSH_DEVICE: DurableObjectNamespace
     }
   | {
-      ENVIRONMENT: 'development'
+      ENVIRONMENT: 'development' | 'candidate'
       SENTRY_DSN: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string

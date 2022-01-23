@@ -12,7 +12,7 @@ const getDurableObject = (
   }
 
   const durableObject =
-    env.ENVIRONMENT === 'production'
+    env.ENVIRONMENT === 'release'
       ? env.TOOOT_PUSH_DEVICE
       : env.TOOOT_PUSH_DEVICE_DEV
 
