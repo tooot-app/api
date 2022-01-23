@@ -1,26 +1,26 @@
+account_id = "4b99fe044748e20b67286e12a4f239fb"
+compatibility_date = "2021-12-04"
 name = "tooot-translate-candidate"
 type = "javascript"
-account_id = "4b99fe044748e20b67286e12a4f239fb"
-zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
-compatibility_date = "2021-12-04"
 workers_dev = false
+zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 
-[build]
-command = "yarn && yarn build"
-[build.upload]
-format = "modules"
-main = "./index.mjs"
-
-vars = { ENVIRONMENT = "development" }
+vars = {ENVIRONMENT = "development"}
 
 [env.candidate]
 route = "api-candidate.tooot.app/translate"
-vars = { ENVIRONMENT = "candidate" }
+vars = {ENVIRONMENT = "candidate"}
 
 [env.release]
 name = "tooot-translate"
 route = "api.tooot.app/translate"
-vars = { ENVIRONMENT = "release" }
+vars = {ENVIRONMENT = "release"}
+
+[build]
+command = "yarn build"
+[build.upload]
+format = "modules"
+main = "./index.mjs"
 
 [miniflare]
 cache_persist = "./.mf/cache"
