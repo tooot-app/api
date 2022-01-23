@@ -17,6 +17,9 @@ command = "yarn && yarn build"
 format = "modules"
 main = "./index.mjs"
 
+[env.candidate]
+vars = { ENVIRONMENT = "candidate" }
+
 [env.release]
 name = "tooot-push"
 route = "api.tooot.app/push/*"

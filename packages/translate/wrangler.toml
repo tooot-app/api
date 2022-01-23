@@ -14,6 +14,9 @@ command = "yarn && yarn build"
 format = "modules"
 main = "./index.mjs"
 
+[env.candidate]
+vars = { ENVIRONMENT = "candidate" }
+
 [env.release]
 name = "tooot-translate"
 route = "api.tooot.app/translate"
