@@ -6,17 +6,14 @@ import subscribe from './routes/subscribe'
 import universal from './routes/universal'
 import handleErrors from './utils/handleErrors'
 
-const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 export type ParamsGlobal = {
   params: { expoToken: string; instanceUrl: string; accountId: string }
 }
 
-// GET
-export const pathConnect = '/connect/:expoToken'
+// GET /connect/:expoToken
 export type ParamsConnect = { expoToken: string }
 
-// POST
-export const pathSubscribe = `/subscribe${pathGlobal}`
+// POST /subscribe/${pathGlobal}
 export type ParamsSubscribe = ParamsGlobal
 export type BodySubscribe = {
   accountFull: string
@@ -24,17 +21,14 @@ export type BodySubscribe = {
   auth?: string
 }
 
-// DELETE
-export const pathUnsubscribe = `/unsubscribe${pathGlobal}`
+// DELETE /unsubscribe/${pathGlobal}
 export type ParamsUnsubscribe = ParamsGlobal
 
-// PUT
-export const pathUpdateDecode = `/update-decode${pathGlobal}`
+// PUT /update-decode/${pathGlobal}
 export type ParamsUpdateDecode = ParamsGlobal
 export type BodyUpdateDecode = { auth?: string }
 
-// POST
-export const pathSend = `/send${pathGlobal}`
+// POST /send/${pathGlobal}
 export type ParamsSend = ParamsGlobal
 export type HeadersSend = { 'crypto-key': string; encryption: string }
 
@@ -65,12 +59,13 @@ export type Env =
     }
 
 const router = Router({ base: '/push' })
+const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
-router.get(pathConnect, getDurableObject, connect)
-router.post(pathSubscribe, getDurableObject, subscribe)
-router.delete(pathUnsubscribe, getDurableObject, universal)
-router.put(pathUpdateDecode, getDurableObject, universal)
-router.post(pathSend, getDurableObject, send)
+router.get('/connect/:expoToken', getDurableObject, connect)
+router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
+router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
+router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
+router.post(`/send${pathGlobal}`, getDurableObject, send)
 router.all('*', () => new Response(null, { status: 404 }))
 
 export default {

@@ -4,12 +4,7 @@ import {
   Env,
   ParamsSend,
   ParamsSubscribe,
-  ParamsUpdateDecode,
-  pathConnect,
-  pathSend,
-  pathSubscribe,
-  pathUnsubscribe,
-  pathUpdateDecode
+  ParamsUpdateDecode
 } from '..'
 import handleErrors from '../utils/handleErrors'
 
@@ -48,8 +43,9 @@ export class Device {
 
   fetch = async (request: Request) => {
     const router = Router({ base: '/push' })
+    const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
-    router.get(pathConnect, async (): Promise<Response> => {
+    router.get('/connect/:expoToken', async (): Promise<Response> => {
       this.accounts = (await this.state.storage.get('accounts')) || {}
       if (Object.keys(this.accounts).length === 0) {
         return new Response('Your device has zero account registered', {
@@ -60,7 +56,7 @@ export class Device {
       return new Response()
     })
     router.post(
-      pathSubscribe,
+      `/subscribe${pathGlobal}`,
       async (request: Request & ParamsSubscribe): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
@@ -75,7 +71,7 @@ export class Device {
       }
     )
     router.delete(
-      pathUnsubscribe,
+      `/unsubscribe${pathGlobal}`,
       async (request: Request & ParamsSubscribe): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
@@ -88,7 +84,7 @@ export class Device {
       }
     )
     router.put(
-      pathUpdateDecode,
+      `/update-decode${pathGlobal}`,
       async (request: Request & ParamsUpdateDecode): Promise<Response> => {
         const body = await request.json<BodyUpdateDecode>()
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
@@ -109,7 +105,7 @@ export class Device {
         return new Response()
       }
     )
-    router.post(pathSend, async (request: Request & ParamsSend) => {
+    router.post(`/send${pathGlobal}`, async (request: Request & ParamsSend) => {
       this.account = `${request.params.instanceUrl}/${request.params.accountId}`
       const accounts = await this.state.storage.get<Accounts>('accounts', {
         allowConcurrency: true

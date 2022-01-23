@@ -1,29 +1,33 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
+zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 compatibility_date = "2021-12-04"
-name = "tooot-push-candidate"
 type = "javascript"
 workers_dev = false
-zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 
-durable_objects = {bindings = [
-  {name = "TOOOT_PUSH_DEVICE_DEV", class_name = "Device"},
-]}
-vars = {ENVIRONMENT = "development"}
+name = "tooot-push-development"
+vars = { ENVIRONMENT = "development" }
+durable_objects = { bindings = [
+  { name = "TOOOT_PUSH_DEVICE_DEV", class_name = "Device" },
+] }
+[[migrations]]
+tag = "v1"
+new_classes = ["Device"]
 
 [env.candidate]
-durable_objects = {bindings = [
-  {name = "TOOOT_PUSH_DEVICE_CANDIDATE", class_name = "Device"},
-]}
+name = "tooot-push-candidate"
+vars = { ENVIRONMENT = "candidate" }
 route = "api-candidate.tooot.app/push/*"
-vars = {ENVIRONMENT = "candidate"}
+durable_objects = { bindings = [
+  { name = "TOOOT_PUSH_DEVICE_CANDIDATE", class_name = "Device" },
+] }
 
 [env.release]
-durable_objects = {bindings = [
-  {name = "TOOOT_PUSH_DEVICE", class_name = "Device"},
-]}
 name = "tooot-push"
+vars = { ENVIRONMENT = "release" }
 route = "api.tooot.app/push/*"
-vars = {ENVIRONMENT = "release"}
+durable_objects = { bindings = [
+  { name = "TOOOT_PUSH_DEVICE", class_name = "Device" },
+] }
 
 [build]
 command = "yarn build"

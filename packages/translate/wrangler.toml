@@ -1,13 +1,14 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
+zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 compatibility_date = "2021-12-04"
-name = "tooot-translate-candidate"
 type = "javascript"
 workers_dev = false
-zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 
+name = "tooot-translate-development"
 vars = {ENVIRONMENT = "development"}
 
 [env.candidate]
+name = "tooot-translate-candidate"
 route = "api-candidate.tooot.app/translate"
 vars = {ENVIRONMENT = "candidate"}
 
