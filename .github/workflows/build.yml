@@ -30,7 +30,7 @@ jobs:
           wranglerVersion: '1'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           environment: ${{ steps.branch.outputs.branch }}
-          workingDirectory: './packages/${{ matrix.dir }}'
+          workingDirectory: './packages/${{ matrix.package }}'
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
         env:
