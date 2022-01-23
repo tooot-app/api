@@ -2,6 +2,8 @@ name: Deploy tooot API services
 on:
   push:
     branches:
+      - candidate
+      - release
 
 jobs:
   build:
@@ -25,7 +27,6 @@ jobs:
         env:
           VERSION: ${{ github.sha }}
         with:
-          publish: ${{ steps.branch.outputs.branch == 'candidate' || steps.branch.outputs.branch == 'release' }}
           wranglerVersion: '1'
           apiToken: ${{ secrets.CF_API_TOKEN }}
           environment: ${{ steps.branch.outputs.branch }}
