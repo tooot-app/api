@@ -27,7 +27,7 @@ jobs:
           CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
           CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
         working-directory: './packages/${{ matrix.package }}'
-        run: yarn deploy --env ${{ steps.branch.outputs.branch }}
+        run: yarn && yarn deploy --env ${{ steps.branch.outputs.branch }}
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
         env:
