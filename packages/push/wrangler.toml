@@ -18,7 +18,7 @@ name = "tooot-push-candidate"
 vars = { ENVIRONMENT = "candidate" }
 route = "api-candidate.tooot.app/push/*"
 durable_objects = { bindings = [
-  { name = "TOOOT_PUSH_DEVICE_CANDIDATE", class_name = "Device" },
+  { name = "TOOOT_PUSH_DEVICE_DEV", class_name = "Device" },
 ] }
 
 [env.release]

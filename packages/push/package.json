@@ -8,7 +8,7 @@
     "postinstall": "patch-package",
     "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
     "dev": "miniflare dist/index.mjs --debug --watch --do-persist",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish --env"
   },
   "dependencies": {
     "buffer": "6.0.3",

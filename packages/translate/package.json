@@ -7,7 +7,7 @@
   "scripts": {
     "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=browser --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
     "dev": "miniflare dist/index.mjs --watch",
-    "deploy": "wrangler publish"
+    "deploy": "wrangler publish --env"
   },
   "dependencies": {
     "sanitize-html": "^2.6.1",
