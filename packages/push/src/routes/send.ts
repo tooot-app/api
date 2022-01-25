@@ -97,11 +97,8 @@ const send = async (
         }
       })
       context.waitUntil(
-        (async () => {
-          await new Promise(() =>
-            setTimeout(() => console.log('This is being waited on'), 2000)
-          )
-        })()
+        //@ts-ignore
+        setTimeout(() => console.log('This is being waited on'), 2000)
       )
       return new Response(JSON.stringify(message), {
         headers: { 'Content-Type': 'application/json' }

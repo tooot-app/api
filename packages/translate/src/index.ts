@@ -1,22 +1,29 @@
-import Toucan from 'toucan-js'
-import checkCache from './checkCache'
-import sanitizeBody from './sanitizeBody'
-// import useDeepL from './useDeepL'
-import useIBM from './useIBM'
+import { Router } from 'itty-router'
+import cacheAndReturn from './middlewares/cacheAndReturn'
+import checkBody from './middlewares/checkBody'
+import checkCache from './middlewares/checkCache'
+import sanitizeBody from './middlewares/sanitizeBody'
+import useDeepL from './middlewares/useDeepL'
+import useIBM from './middlewares/useIBM'
 import handleErrors from './utils/handleErrors'
 
-// -> POST /
-// {
-//   source?: string
-//   target: string
-//   text: string[]
-// }
-// <- cached
-// {
-//   provider: string
-//   sourceLanguage: string
-//   text: string[]
-// }
+// POST /
+export type BodyRequest = {
+  source?: string
+  target: string
+  text: string[]
+}
+export type BodyResponse = {
+  provider: string
+  sourceLanguage: string
+  text: string[]
+}
+
+export type NewRequest = Request & {
+  bodyJson: BodyRequest
+  cacheKey: string
+  translation: BodyResponse
+}
 
 export type Env = {
   ENVIRONMENT: 'development' | 'candidate' | 'release'
@@ -25,82 +32,24 @@ export type Env = {
   SENTRY_DSN: string
 }
 
-export type BodyContent = {
-  source?: string
-  target: string
-  text: string[]
-}
+const router = Router({ base: '/translate' })
+
+router.post(
+  '/',
+  checkBody,
+  checkCache,
+  sanitizeBody,
+  useIBM,
+  useDeepL,
+  cacheAndReturn
+)
+router.all('*', () => new Response(null, { status: 404 }))
 
 export default {
-  async fetch(request: Request, env: Env, context: ExecutionContext) {
-    const sentry = new Toucan({
-      dsn: env.SENTRY_DSN,
-      environment: env.ENVIRONMENT,
-      debug: env.ENVIRONMENT === 'development',
-      context,
-      request,
-      allowedHeaders: [
-        'user-agent',
-        'cf-challenge',
-        'accept-encoding',
-        'accept-language',
-        'cf-ray',
-        'content-length',
-        'content-type',
-        'x-real-ip',
-        'host'
-      ],
-      allowedSearchParams: /(.*)/,
-      rewriteFrames: {
-        root: '/'
-      }
-    })
-    const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
-    sentry.setTag('colo', colo)
-    const ipAddress =
-      request.headers.get('cf-connecting-ip') ||
-      request.headers.get('x-forwarded-for')
-    const userAgent = request.headers.get('user-agent') || ''
-    sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-    sentry.setExtras({ body: request.clone().text() })
-
-    return await handleErrors(sentry, async () => {
-      const body: BodyContent = await request.json()
-
-      if (
-        !body.target ||
-        !Array.isArray(body.text) ||
-        !body.text.filter(t => t.length > 0)
-      ) {
-        throw new Error('Request body error')
-      }
-
-      const cache = caches.default
-      const hasCached = await checkCache({ cache, request, body })
-      if (typeof hasCached !== 'string') {
-        return hasCached
-      }
-
-      const sanitizedBody = sanitizeBody(body)
-
-      const translation = await useIBM({ env, ...sanitizedBody })
-      // if (!translation) {
-      //   translation = await useDeepL({ env, ...body})
-      // }
-
-      if (!translation) {
-        throw new Error('Translation failed')
-      } else {
-        const response = new Response(JSON.stringify(translation), {
-          headers: {
-            'content-type': 'application/json;charset=UTF-8',
-            'tooot-Cache': 'HIT'
-          }
-        })
-        context.waitUntil(cache.put(hasCached, response.clone()))
-        response.headers.set('tooot-Cache', 'MISS')
-        return response
-      }
-    })
-  }
+  fetch: (request: NewRequest, env: Env, context: ExecutionContext) =>
+    router
+      .handle(request, env, context)
+      .catch((err: unknown) =>
+        handleErrors('workers - fetch', err, { request, env, context })
+      )
 }
