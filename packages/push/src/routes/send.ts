@@ -59,12 +59,16 @@ const send = async (
 
   if (!stored.auth && !stored.legacyKeys?.auth) {
     context.waitUntil(
-      pushToExpo(env.EXPO_ACCESS_TOKEN_PUSH, {
-        context: {
-          ...request.params,
-          accountFull: stored.accountFull
-        }
-      })
+      pushToExpo(
+        env.EXPO_ACCESS_TOKEN_PUSH,
+        {
+          context: {
+            ...request.params,
+            accountFull: stored.accountFull
+          }
+        },
+        { request, env, context }
+      )
     )
   } else {
     let tempPublic: string
@@ -136,13 +140,17 @@ const send = async (
     })
 
     context.waitUntil(
-      pushToExpo(env.EXPO_ACCESS_TOKEN_PUSH, {
-        context: {
-          ...request.params,
-          accountFull: stored.accountFull
+      pushToExpo(
+        env.EXPO_ACCESS_TOKEN_PUSH,
+        {
+          context: {
+            ...request.params,
+            accountFull: stored.accountFull
+          },
+          details: message
         },
-        details: message
-      })
+        { request, env, context }
+      )
     )
   }
 

@@ -1,5 +1,5 @@
-import Toucan from 'toucan-js'
 import { Env } from '..'
+import sentryCapture from './sentryCapture'
 
 const handleErrors = (
   type: string,
@@ -14,37 +14,7 @@ const handleErrors = (
     context: Pick<ExecutionContext, 'waitUntil'>
   }
 ): Response => {
-  const sentry = new Toucan({
-    dsn: env.SENTRY_DSN,
-    environment: env.ENVIRONMENT,
-    debug: env.ENVIRONMENT === 'development',
-    context,
-    request,
-    allowedHeaders: [
-      'user-agent',
-      'cf-challenge',
-      'accept-encoding',
-      'accept-language',
-      'cf-ray',
-      'content-length',
-      'content-type',
-      'x-real-ip',
-      'host'
-    ],
-    allowedSearchParams: /(.*)/,
-    rewriteFrames: {
-      root: '/'
-    }
-  })
-
-  sentry.setTag('type', type)
-
-  const colo = request.cf && request.cf.colo ? request.cf.colo : 'UNKNOWN'
-  const ipAddress =
-    request.headers.get('cf-connecting-ip') ||
-    request.headers.get('x-forwarded-for')
-  const userAgent = request.headers.get('user-agent') || ''
-  sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
+  const sentry = sentryCapture(type, { request, env, context })
 
   const message = err instanceof Error ? err.message : 'Unknown error'
   console.warn(message)

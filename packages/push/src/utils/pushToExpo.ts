@@ -1,3 +1,6 @@
+import { Env } from '..'
+import sentryCapture from './sentryCapture'
+
 export type Message = {
   context: {
     expoToken: string
@@ -16,7 +19,15 @@ export type Message = {
   }
 }
 
-const pushToExpo = async (token: string, message: Message) => {
+const pushToExpo = async (
+  token: string,
+  message: Message,
+  workers: {
+    request: Request
+    env: Env
+    context: Pick<ExecutionContext, 'waitUntil'>
+  }
+) => {
   let toPush
 
   if (message.details) {
@@ -63,6 +74,19 @@ const pushToExpo = async (token: string, message: Message) => {
     },
     body: JSON.stringify(toPush)
   })
+    .then(async res => {
+      if (res.status !== 200) {
+        const body: any = await res.json()
+
+        const sentry = sentryCapture('expo - push ticket', workers)
+        sentry.setExtras(body)
+        sentry.captureException(body.errors)
+      }
+    })
+    .catch(err => {
+      const sentry = sentryCapture('expo - error', workers)
+      sentry.captureException(err)
+    })
 }
 
 export default pushToExpo
