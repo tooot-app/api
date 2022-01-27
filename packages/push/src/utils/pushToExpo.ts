@@ -27,7 +27,7 @@ const pushToExpo = async (
     env: Env
     context: Pick<ExecutionContext, 'waitUntil'>
   }
-) => {
+): Promise<any> => {
   let toPush
 
   if (message.details) {
@@ -75,9 +75,18 @@ const pushToExpo = async (
     body: JSON.stringify(toPush)
   })
     .then(async res => {
-      if (res.status !== 200) {
-        const body: any = await res.json()
+      const body: any = await res.json()
 
+      await fetch('https://log-api.newrelic.com/log/v1', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Api-Key': workers.env.NEW_RELIC_KEY
+        },
+        body: JSON.stringify(body)
+      })
+
+      if (res.status !== 200) {
         const sentry = sentryCapture('expo - push ticket', workers)
         sentry.setExtras(body)
         sentry.captureException(body.errors)

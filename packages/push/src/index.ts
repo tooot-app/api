@@ -40,20 +40,20 @@ export type Env =
   | {
       ENVIRONMENT: 'release'
       SENTRY_DSN: string
+      NEW_RELIC_KEY: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string
       KEY_PUBLIC: string
-      MIGRATION_KEY: string
       // Durable Objects
       TOOOT_PUSH_DEVICE: DurableObjectNamespace
     }
   | {
       ENVIRONMENT: 'development' | 'candidate'
       SENTRY_DSN: string
+      NEW_RELIC_KEY: string
       EXPO_ACCESS_TOKEN_PUSH: string
       KEY_PRIVATE: string
       KEY_PUBLIC: string
-      MIGRATION_KEY: string
       // Durable Objects
       TOOOT_PUSH_DEVICE_DEV: DurableObjectNamespace
     }
