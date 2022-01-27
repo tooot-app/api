@@ -77,13 +77,13 @@ const pushToExpo = async (
     .then(async res => {
       const body: any = await res.json()
 
-      await fetch('https://log-api.newrelic.com/log/v1', {
+      await fetch('https://log-api.eu.newrelic.com/log/v1', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Api-Key': workers.env.NEW_RELIC_KEY
         },
-        body: JSON.stringify(body)
+        body: JSON.stringify({ message: body })
       })
 
       if (res.status !== 200) {
