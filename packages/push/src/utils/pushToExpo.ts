@@ -83,7 +83,14 @@ const pushToExpo = async (
           'Content-Type': 'application/json',
           'Api-Key': workers.env.NEW_RELIC_KEY
         },
-        body: JSON.stringify({ message: body })
+        body: JSON.stringify({
+          message: {
+            expoToken: message.context.expoToken,
+            instanceUrl: message.context.instanceUrl,
+            accountId: message.context.accountId,
+            ...body
+          }
+        })
       })
 
       if (res.status !== 200) {
