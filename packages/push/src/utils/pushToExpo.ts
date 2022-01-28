@@ -1,4 +1,5 @@
-import { Env } from '..'
+import { DurableObjectDevice, Env } from '..'
+import logToNR from './logToNR'
 import sentryCapture from './sentryCapture'
 
 export type Message = {
@@ -23,7 +24,7 @@ const pushToExpo = async (
   token: string,
   message: Message,
   workers: {
-    request: Request
+    request: Request & DurableObjectDevice
     env: Env
     context: Pick<ExecutionContext, 'waitUntil'>
   }
@@ -75,28 +76,35 @@ const pushToExpo = async (
     body: JSON.stringify(toPush)
   })
     .then(async res => {
-      const body: any = await res.json()
+      const body: {
+        data:
+          | { status: 'ok'; id: string }[]
+          | {
+              status: 'error'
+              message: string
+              details: { error: string; fault: string }
+            }[]
+      } = await res.json()
 
-      await fetch('https://log-api.eu.newrelic.com/log/v1', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Api-Key': workers.env.NEW_RELIC_KEY
-        },
-        body: JSON.stringify({
-          message: {
-            expoToken: message.context.expoToken,
-            instanceUrl: message.context.instanceUrl,
-            accountId: message.context.accountId,
-            ...body
-          }
-        })
+      await logToNR(workers.env.NEW_RELIC_KEY, {
+        expoToken: message.context.expoToken,
+        instanceUrl: message.context.instanceUrl,
+        ...body
       })
+
+      if (body.data?.[0]?.status === 'error') {
+        await workers.request.durableObject.fetch(
+          `${new URL(workers.request.url).origin}/do/count-error`,
+          {
+            method: 'PUT'
+          }
+        )
+      }
 
       if (res.status !== 200) {
         const sentry = sentryCapture('expo - push ticket', workers)
         sentry.setExtras(body)
-        sentry.captureException(body.errors)
+        sentry.captureException(res)
       }
     })
     .catch(err => {
