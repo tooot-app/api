@@ -50,6 +50,13 @@ export class Device {
           status: 404
         })
       }
+
+      this.errors = await this.state.storage.get<number>('errors')
+      if (this.errors && this.errors > 0) {
+        this.errors = 0
+        this.state.storage.put('errors', this.errors)
+      }
+
       await this.state.storage.put('connectedTimestamp', new Date().getTime())
       return new Response()
     })

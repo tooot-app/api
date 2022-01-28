@@ -92,7 +92,10 @@ const pushToExpo = async (
         ...body
       })
 
-      if (body.data?.[0]?.status === 'error') {
+      if (
+        body.data?.[0]?.status === 'error' &&
+        body.data?.[0]?.details?.error === 'DeviceNotRegistered'
+      ) {
         await workers.request.durableObject.fetch(
           `${new URL(workers.request.url).origin}/do/count-error`,
           {
