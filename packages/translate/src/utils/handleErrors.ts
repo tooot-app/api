@@ -18,7 +18,8 @@ const handleErrors = (
     dsn: env.SENTRY_DSN,
     environment: env.ENVIRONMENT,
     debug: env.ENVIRONMENT === 'development',
-    release: 'ESBUILD_RELEASE',
+    // @ts-ignore
+    release: process.env.RELEASE,
     context,
     request,
     allowedHeaders: [
