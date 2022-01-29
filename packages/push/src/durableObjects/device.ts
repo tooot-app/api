@@ -155,6 +155,14 @@ export class Device {
       return new Response()
     })
 
+    // Admin
+    router.get('/admin/expoToken/:expoToken', async (): Promise<Response> => {
+      return new Response(
+        JSON.stringify(Object.fromEntries(await this.state.storage.list())),
+        { headers: { 'Content-Type': 'application/json' } }
+      )
+    })
+
     router.all('*', (): Response => new Response(null, { status: 404 }))
 
     return router.handle(request).catch((err: unknown) =>

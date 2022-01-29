@@ -66,6 +66,9 @@ router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
 router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
 router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
 router.post(`/send${pathGlobal}`, getDurableObject, send)
+
+router.get('/admin/expoToken/:expoToken', getDurableObject, universal)
+
 router.all('*', (): Response => new Response(null, { status: 404 }))
 
 export default {
