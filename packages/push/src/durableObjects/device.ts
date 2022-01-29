@@ -28,14 +28,14 @@ export class Device {
   env: Env
   accounts: Accounts
   account?: string
-  errors?: number
+  errorCounts?: number
 
   constructor(state: DurableObjectState, env: Env) {
     this.state = state
     this.env = env
     this.accounts = {}
     this.account = undefined
-    this.errors = undefined
+    this.errorCounts = undefined
   }
 
   fetch = async (request: Request) => {
@@ -51,10 +51,10 @@ export class Device {
         })
       }
 
-      this.errors = await this.state.storage.get<number>('errors')
-      if (this.errors && this.errors > 0) {
-        this.errors = 0
-        this.state.storage.put('errors', this.errors)
+      this.errorCounts = await this.state.storage.get<number>('errorCounts')
+      if (this.errorCounts && this.errorCounts > 0) {
+        this.errorCounts = 0
+        this.state.storage.put('errorCounts', this.errorCounts)
       }
 
       await this.state.storage.put('connectedTimestamp', new Date().getTime())
@@ -126,10 +126,10 @@ export class Device {
           )
         }
 
-        this.errors = await this.state.storage.get<number>('errors', {
+        this.errorCounts = await this.state.storage.get<number>('errorCounts', {
           allowConcurrency: true
         })
-        if (this.errors && this.errors > 5) {
+        if (this.errorCounts && this.errorCounts > 5) {
           await this.state.storage.deleteAll()
           await logToNR(this.env.NEW_RELIC_KEY, {
             tooot_push_log: 'error_limit_reached',
@@ -137,7 +137,7 @@ export class Device {
             expoToken: request.params.expoToken,
             instanceUrl: request.params.instanceUrl
           })
-          return new Response("Device's errors reached limit", {
+          return new Response("Device's errorCounts reached limit", {
             status: 404
           })
         }
@@ -147,11 +147,11 @@ export class Device {
 
     // Custom routes for Durable Object
     router.put('/do/count-error', async (): Promise<Response> => {
-      this.errors = await this.state.storage.get<number>('errors', {
+      this.errorCounts = await this.state.storage.get<number>('errorCounts', {
         allowConcurrency: true
       })
-      this.errors = (this.errors || 0) + 1
-      this.state.storage.put('errors', this.errors)
+      this.errorCounts = (this.errorCounts || 0) + 1
+      this.state.storage.put('errorCounts', this.errorCounts)
       return new Response()
     })
 
