@@ -37,3 +37,4 @@ jobs:
         with:
           environment: ${{ steps.branch.outputs.branch }}
           sourcemaps: './packages/${{ matrix.package }}/dist'
+          version: ${{ github.sha }}
