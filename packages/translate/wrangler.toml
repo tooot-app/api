@@ -17,8 +17,6 @@ name = "tooot-translate"
 route = "api.tooot.app/translate"
 vars = {ENVIRONMENT = "release"}
 
-[build]
-command = "yarn build"
 [build.upload]
 format = "modules"
 main = "./index.mjs"

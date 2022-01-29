@@ -18,6 +18,7 @@ const handleErrors = (
     dsn: env.SENTRY_DSN,
     environment: env.ENVIRONMENT,
     debug: env.ENVIRONMENT === 'development',
+    release: 'ESBUILD_RELEASE',
     context,
     request,
     allowedHeaders: [
