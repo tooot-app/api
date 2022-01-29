@@ -6,7 +6,7 @@
   "module": "./dist/index.mjs",
   "scripts": {
     "postinstall": "patch-package",
-    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
+    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --sources-content=false --minify --outfile=./dist/index.mjs ./src/index.ts",
     "dev": "miniflare dist/index.mjs --debug --watch --do-persist",
     "deploy": "wrangler publish --env"
   },
