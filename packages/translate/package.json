@@ -5,7 +5,7 @@
   "license": "MIT",
   "module": "./dist/index.mjs",
   "scripts": {
-    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=browser --target=es2020 --sourcemap --sources-content=false --minify --outfile=./dist/index.mjs ./src/index.ts",
+    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=browser --target=es2020 --sourcemap=both --minify --outfile=./dist/index.mjs ./src/index.ts",
     "dev": "miniflare dist/index.mjs --watch",
     "deploy": "wrangler publish --env"
   },
