@@ -37,4 +37,4 @@ jobs:
         with:
           environment: ${{ steps.branch.outputs.branch }}
           sourcemaps: './packages/${{ matrix.package }}/dist'
-          url_prefix: '/'
+          url_prefix: '/dist/'

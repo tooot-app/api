@@ -34,7 +34,7 @@ const sentryCapture = (
     ],
     allowedSearchParams: /(.*)/,
     rewriteFrames: {
-      root: '/'
+      root: '/dist/'
     }
   })
 

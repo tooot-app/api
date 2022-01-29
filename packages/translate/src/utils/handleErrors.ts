@@ -35,7 +35,7 @@ const handleErrors = (
     ],
     allowedSearchParams: /(.*)/,
     rewriteFrames: {
-      root: '/'
+      root: '/dist/'
     }
   })
 
