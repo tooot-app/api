@@ -101,8 +101,17 @@ const send = async (
         }
       })
       context.waitUntil(
-        //@ts-ignore
-        setTimeout(() => console.log('This is being waited on'), 2000)
+        pushToExpo(
+          env.EXPO_ACCESS_TOKEN_PUSH,
+          {
+            context: {
+              ...request.params,
+              accountFull: stored.accountFull
+            },
+            details: message
+          },
+          { request, env, context }
+        )
       )
       return new Response(JSON.stringify(message), {
         headers: { 'Content-Type': 'application/json' }

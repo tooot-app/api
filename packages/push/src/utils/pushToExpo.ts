@@ -64,53 +64,77 @@ const pushToExpo = async (
     }
   }
 
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      host: 'exp.host',
-      accept: 'application/json',
-      'accept-encoding': 'gzip, deflate',
-      'content-type': 'application/json'
-    },
-    body: JSON.stringify(toPush)
-  })
-    .then(async res => {
-      const body: {
-        data:
-          | { status: 'ok'; id: string }[]
-          | {
-              status: 'error'
-              message: string
-              details: { error: string; fault: string }
-            }[]
-      } = await res.json()
+  if (workers.env.ENVIRONMENT === 'release') {
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        host: 'exp.host',
+        accept: 'application/json',
+        'accept-encoding': 'gzip, deflate',
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify(toPush)
+    })
+      .then(async res => {
+        const body: {
+          data:
+            | { status: 'ok'; id: string }[]
+            | {
+                status: 'error'
+                message: string
+                details: { error: string; fault: string }
+              }[]
+        } = await res.json()
 
-      await logToNR(workers.env.NEW_RELIC_KEY, {
-        expoToken: message.context.expoToken,
-        instanceUrl: message.context.instanceUrl,
-        ...body
+        logToNR(workers.env.NEW_RELIC_KEY, {
+          expoToken: message.context.expoToken,
+          instanceUrl: message.context.instanceUrl,
+          ...body
+        })
+
+        if (body.data?.[0]?.status === 'error') {
+          await workers.request.durableObject.fetch(
+            `${new URL(workers.request.url).origin}/push/do/count-error`,
+            {
+              method: 'PUT'
+            }
+          )
+        }
+
+        if (res.status !== 200) {
+          const sentry = sentryCapture('expo - push ticket', workers)
+          sentry.setExtras(body)
+          sentry.captureException(res)
+        }
       })
+      .catch(err => {
+        const sentry = sentryCapture('expo - error', workers)
+        sentry.captureException(err)
+      })
+  } else {
+    await fetch('https://api.tooot.app/cdn-cgi/trace')
+      .then(async res => {
+        const body: any = await res.text()
 
-      if (body.data?.[0]?.status === 'error') {
         await workers.request.durableObject.fetch(
           `${new URL(workers.request.url).origin}/push/do/count-error`,
           {
             method: 'PUT'
           }
         )
-      }
 
-      if (res.status !== 200) {
-        const sentry = sentryCapture('expo - push ticket', workers)
-        sentry.setExtras(body)
-        sentry.captureException(res)
-      }
-    })
-    .catch(err => {
-      const sentry = sentryCapture('expo - error', workers)
-      sentry.captureException(err)
-    })
+        if (res.status !== 200) {
+          const sentry = sentryCapture('expo - push ticket', workers)
+          sentry.setExtras(body)
+          sentry.captureException(res)
+        }
+      })
+      .catch(err => {
+        const sentry = sentryCapture('expo - error', workers)
+        sentry.captureException(err)
+      })
+  }
 }
 
 export default pushToExpo
