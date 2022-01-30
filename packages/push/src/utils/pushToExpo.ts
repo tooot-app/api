@@ -79,21 +79,21 @@ const pushToExpo = async (
       .then(async res => {
         const body: {
           data:
-            | { status: 'ok'; id: string }[]
+            | { status: 'ok'; id: string }
             | {
                 status: 'error'
                 message: string
                 details: { error: string; fault: string }
-              }[]
+              }
         } = await res.json()
 
-        logToNR(workers.env.NEW_RELIC_KEY, {
+        await logToNR(workers.env.NEW_RELIC_KEY, {
           expoToken: message.context.expoToken,
           instanceUrl: message.context.instanceUrl,
           ...body
         })
 
-        if (body.data?.[0]?.status === 'error') {
+        if (body.data?.status === 'error') {
           await workers.request.durableObject.fetch(
             `${new URL(workers.request.url).origin}/push/do/count-error`,
             {
