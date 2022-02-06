@@ -25,7 +25,7 @@ const useIBM = async (request: NewRequest, env: Env) => {
     ).json()
 
     if (!translation.translations || !Array.isArray(translation.translations)) {
-      throw new Error(translation.toString())
+      throw new Error(JSON.stringify(translation))
     }
 
     request.translation = {
