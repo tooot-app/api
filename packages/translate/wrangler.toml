@@ -6,16 +6,25 @@ workers_dev = false
 
 name = "tooot-translate-development"
 vars = {ENVIRONMENT = "development"}
+kv_namespaces = [ 
+  { binding = "LANGUAGES", id = "<ignored>" }
+]
 
 [env.candidate]
 name = "tooot-translate-candidate"
 route = "api-candidate.tooot.app/translate"
 vars = {ENVIRONMENT = "candidate"}
+kv_namespaces = [ 
+  { binding = "LANGUAGES", id = "3d96a5a0bece43a1b8ad551505306716" }
+]
 
 [env.release]
 name = "tooot-translate"
 route = "api.tooot.app/translate"
 vars = {ENVIRONMENT = "release"}
+kv_namespaces = [ 
+  { binding = "LANGUAGES", id = "b0196b4e1db04259aefaf599306afb7a" }
+]
 
 [build.upload]
 format = "modules"

@@ -30,6 +30,8 @@ export type Env = {
   IBM_KEY: string
   DEEPL_KEY: string
   SENTRY_DSN: string
+  // KV
+  LANGUAGES: KVNamespace
 }
 
 const router = Router({ base: '/translate' })
@@ -40,7 +42,7 @@ router.post(
   checkCache,
   sanitizeBody,
   useIBM,
-  useDeepL,
+  // useDeepL,
   cacheAndReturn
 )
 router.all('*', () => new Response(null, { status: 404 }))
