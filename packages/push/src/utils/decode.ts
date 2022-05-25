@@ -1,9 +1,8 @@
-import Buffer from 'buffer/'
 // @ts-ignore
 import createECDH from 'create-ecdh'
 
 export type DecodeData = {
-  body: Buffer.Buffer
+  body: Buffer
   keys: {
     auth: string
     public: string
@@ -35,12 +34,12 @@ const hkdf = async (
 
 function createInfo(
   type: 'aesgcm' | 'nonce',
-  clientPublicKey: Buffer.Buffer,
-  serverPublicKey: Buffer.Buffer
+  clientPublicKey: Buffer,
+  serverPublicKey: Buffer
 ) {
   const len = type.length
 
-  const info = Buffer.Buffer.alloc(18 + len + 1 + 5 + 1 + 2 + 65 + 2 + 65)
+  const info = Buffer.alloc(18 + len + 1 + 5 + 1 + 2 + 65 + 2 + 65)
 
   info.write('Content-Encoding: ')
   info.write(type, 18)
@@ -67,18 +66,18 @@ const decode = async ({
   title: string
   body: string
 }> => {
-  const decodeAuth = Buffer.Buffer.from(keys.auth, 'base64')
-  const decodePublic = Buffer.Buffer.from(keys.public, 'base64')
-  const decodePrivate = Buffer.Buffer.from(keys.private, 'base64')
+  const decodeAuth = Buffer.from(keys.auth, 'base64')
+  const decodePublic = Buffer.from(keys.public, 'base64')
+  const decodePrivate = Buffer.from(keys.private, 'base64')
 
-  const salt = Buffer.Buffer.from(keys.encryption, 'base64')
-  const cryptoKey = Buffer.Buffer.from(keys.crypto, 'base64')
+  const salt = Buffer.from(keys.encryption, 'base64')
+  const cryptoKey = Buffer.from(keys.crypto, 'base64')
 
   const receiver_curve = createECDH('prime256v1')
   receiver_curve.setPrivateKey(decodePrivate)
   const sharedSecret = receiver_curve.computeSecret(cryptoKey)
 
-  const authInfo = Buffer.Buffer.from('Content-Encoding: auth\0', 'utf8')
+  const authInfo = Buffer.from('Content-Encoding: auth\0', 'utf8')
   const prk = await hkdf(sharedSecret, decodeAuth, authInfo, 32)
 
   const contentEncryptionKeyInfo = createInfo('aesgcm', decodePublic, cryptoKey)
@@ -106,9 +105,7 @@ const decode = async ({
     body
   )
 
-  const message = JSON.parse(
-    Buffer.Buffer.from(result).toString('utf-8').substring(2)
-  )
+  const message = JSON.parse(Buffer.from(result).toString('utf-8').substring(2))
   return message
 }
 

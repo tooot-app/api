@@ -15,6 +15,11 @@ const handleErrors = (
     context: Pick<ExecutionContext, 'waitUntil'>
   }
 ): Response => {
+  if (env.ENVIRONMENT === 'development') {
+    console.error(err)
+    return new Response(null, { status: 500 })
+  }
+
   const sentry = sentryCapture(type, { request, env, context })
 
   const message = err instanceof Error ? err.message : 'Unknown error'

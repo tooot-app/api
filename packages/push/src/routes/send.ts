@@ -1,4 +1,3 @@
-import Buffer from 'buffer/'
 import { DurableObjectDevice, Env, HeadersSend, ParamsSend } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
@@ -88,7 +87,7 @@ const send = async (
 
     if (env.ENVIRONMENT !== 'release') {
       const message = await decode({
-        body: Buffer.Buffer.from(
+        body: Buffer.from(
           'pTTuh1jT8KJ4zaGwIWjg417KTDzh+eIVe472nMgett3XyhoM5pAz8Yu2RPBXJHE/AojoMA1g+/uzbByu3d1/AygBh99qJ6Xtjya+XBSYoVrNJqT7vq0cKU9bZ8NrEepnaZUc2HjFUDDXNyHi2xBtJnMk/hSZTzyaiCQS2KssGAwixgdK/dTP8Yg+Pul3tgOQvq5CbYFd7iwBQntVv80vO8X+5hyIglA21+6/2fq5lCZSMri5K9/WbSb6erLkxO//A92KjZTnuufE4pUwtIdYW1bFnw5xu6ozjsCsDLbQTSo+JmghOzc/iYx5hG+y5YViC1UXue4eKKlmjbVDRLH6WkEEIKH2cwd4Gf9ewhYwhH7oKKIc4tjvRunq2gtBirQgRYJahgfwykdYA44iyogBc1rFZPGbxr1ph4RxVhdBmIZ+yMN6GQSiDCS+8jKGsc5xnjxrSXXdFva1a2xc1lpiReypZlTTXFmF16Cf+Z6B0UvFTa2AcqEDD0BBlhhbMBoG7n4CRjr5ObE2lG5PBg+gqitx/O1S+X8a4N78L+eK1upEVM+HRQAdCmiqDNJF0/N/VWSMrNCl7HNgnhmYU9Z1aYepiEioz1Tu14UzY/2NOx5z4h4szyJW8s/diAyOhnh+RBRM3QLHtygpLZ3i7o6vVUc=',
           'base64'
         ),
@@ -138,7 +137,7 @@ const send = async (
     }
 
     const message = await decode({
-      body: Buffer.Buffer.concat(bodyStream),
+      body: Buffer.concat(bodyStream),
       keys: {
         auth: tempAuth,
         private: tempPrivate,
