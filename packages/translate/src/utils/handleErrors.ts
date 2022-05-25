@@ -14,10 +14,14 @@ const handleErrors = (
     context: Pick<ExecutionContext, 'waitUntil'>
   }
 ): Response => {
+  if (env.ENVIRONMENT === 'development') {
+    console.error(err)
+    return new Response(null, { status: 500 })
+  }
+
   const sentry = new Toucan({
     dsn: env.SENTRY_DSN,
     environment: env.ENVIRONMENT,
-    debug: env.ENVIRONMENT === 'development',
     // @ts-ignore
     release: process.env.RELEASE,
     context,
