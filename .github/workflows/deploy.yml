@@ -26,15 +26,16 @@ jobs:
           node-version: 16
       - name: -- Step 3 -- Publish
         uses: cloudflare/wrangler-action@2.0.0
+        working-directory: './packages/${{ matrix.package }}'
         env:
           RELEASE: ${{ github.sha }}
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
-          workingDirectory: './packages/${{ matrix.package }}'
           preCommands: yarn
           command: publish --outdir ./dist/ --env ${{ steps.branch.outputs.branch }}
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
+        working-directory: './packages/${{ matrix.package }}'
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
