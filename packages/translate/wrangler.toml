@@ -1,13 +1,12 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
-zone_id = "aa78e8cee3c1339cebb2e9b3dac10ca9"
 compatibility_date = "2021-12-04"
-type = "javascript"
-workers_dev = false
+main = "./src/index.ts"
+node_compat = true
 
 name = "tooot-translate-development"
 vars = {ENVIRONMENT = "development"}
 kv_namespaces = [ 
-  { binding = "LANGUAGES", id = "<ignored>" }
+  { binding = "LANGUAGES", preview_id = "acd48872fdf244b8a83ef4a00c0656c4", id="" }
 ]
 
 [env.candidate]
@@ -25,11 +24,3 @@ vars = {ENVIRONMENT = "release"}
 kv_namespaces = [ 
   { binding = "LANGUAGES", id = "b0196b4e1db04259aefaf599306afb7a" }
 ]
-
-[build.upload]
-format = "modules"
-main = "./index.mjs"
-
-[miniflare]
-cache_persist = "./.mf/cache"
-disable_cache = false
