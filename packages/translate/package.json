@@ -4,8 +4,7 @@
   "author": "xmflsct <me@xmflsct.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler publish --env"
+    "dev": "wrangler dev"
   },
   "dependencies": {
     "itty-router": "^2.6.1",

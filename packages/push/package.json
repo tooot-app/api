@@ -5,8 +5,7 @@
   "license": "MIT",
   "scripts": {
     "postinstall": "patch-package",
-    "dev": "wrangler dev",
-    "deploy": "wrangler publish --env"
+    "dev": "wrangler dev"
   },
   "dependencies": {
     "create-ecdh": "4.0.4",

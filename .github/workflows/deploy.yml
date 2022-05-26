@@ -17,19 +17,22 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: branch
       - name: -- Step 1 -- Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: -- Step 2 -- Setup node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 16
       - name: -- Step 3 -- Publish
+        uses: cloudflare/wrangler-action@2
         env:
-          CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
-          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
-        working-directory: './packages/${{ matrix.package }}'
-        run: yarn && yarn build --define:process.env.RELEASE=\"${{ github.sha }}\" && yarn deploy ${{ steps.branch.outputs.branch }}
+          RELEASE: ${{ github.sha }}
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          workingDirectory: './packages/${{ matrix.package }}'
+          preCommands: yarn
+          command: publish --outdir ./dist/ --env ${{ steps.branch.outputs.branch }}
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
         env:
@@ -38,5 +41,3 @@ jobs:
           SENTRY_PROJECT: ${{ matrix.package }}
         with:
           environment: ${{ steps.branch.outputs.branch }}
-          sourcemaps: './packages/${{ matrix.package }}/dist'
-          url_prefix: '/dist/'
