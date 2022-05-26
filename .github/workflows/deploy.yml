@@ -25,7 +25,7 @@ jobs:
         with:
           node-version: 16
       - name: -- Step 3 -- Publish
-        uses: cloudflare/wrangler-action@2
+        uses: cloudflare/wrangler-action@2.0.0
         env:
           RELEASE: ${{ github.sha }}
         with:
