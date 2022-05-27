@@ -12,7 +12,7 @@ kv_namespaces = [
 [env.candidate]
 node_compat = true
 name = "tooot-translate-candidate"
-route = "api-candidate.tooot.app/translate"
+route = { pattern = "api-candidate.tooot.app/translate", zone_name = "tooot.app" }
 vars = {ENVIRONMENT = "candidate"}
 kv_namespaces = [ 
   { binding = "LANGUAGES", id = "3d96a5a0bece43a1b8ad551505306716" }
@@ -21,7 +21,7 @@ kv_namespaces = [
 [env.release]
 node_compat = true
 name = "tooot-translate"
-route = "api.tooot.app/translate"
+route = { pattern = "api.tooot.app/translate", zone_name = "tooot.app" }
 vars = {ENVIRONMENT = "release"}
 kv_namespaces = [ 
   { binding = "LANGUAGES", id = "b0196b4e1db04259aefaf599306afb7a" }
