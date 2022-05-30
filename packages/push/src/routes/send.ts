@@ -45,9 +45,9 @@ const send = async (
   if (resDO.status !== 200) {
     return resDO
   }
-  const stored: Account = await resDO.json()
+  const stored: { account: Account; badge: number } = await resDO.json()
 
-  if (`${getServerKey[1]}=` !== stored.serverKey) {
+  if (`${getServerKey[1]}=` !== stored.account.serverKey) {
     return new Response(
       '[send] serverKey in crypto-key header does not match record',
       {
@@ -56,14 +56,15 @@ const send = async (
     )
   }
 
-  if (!stored.auth && !stored.legacyKeys?.auth) {
+  if (!stored.account.auth && !stored.account.legacyKeys?.auth) {
     context.waitUntil(
       pushToExpo(
         env.EXPO_ACCESS_TOKEN_PUSH,
         {
           context: {
             ...request.params,
-            accountFull: stored.accountFull
+            accountFull: stored.account.accountFull,
+            badge: stored.badge
           }
         },
         { request, env, context }
@@ -73,14 +74,14 @@ const send = async (
     let tempPublic: string
     let tempPrivate: string
     let tempAuth: string
-    if (stored.auth) {
+    if (stored.account.auth) {
       tempPublic = env.KEY_PUBLIC
       tempPrivate = env.KEY_PRIVATE
-      tempAuth = stored.auth
-    } else if (stored.legacyKeys) {
-      tempPublic = stored.legacyKeys.public
-      tempPrivate = stored.legacyKeys.private
-      tempAuth = stored.legacyKeys.auth
+      tempAuth = stored.account.auth
+    } else if (stored.account.legacyKeys) {
+      tempPublic = stored.account.legacyKeys.public
+      tempPrivate = stored.account.legacyKeys.private
+      tempAuth = stored.account.legacyKeys.auth
     } else {
       return new Response('[send] No auth key found', { status: 404 })
     }
@@ -99,20 +100,7 @@ const send = async (
           encryption: getEncryption[1]
         }
       })
-      context.waitUntil(
-        pushToExpo(
-          env.EXPO_ACCESS_TOKEN_PUSH,
-          {
-            context: {
-              ...request.params,
-              accountFull: stored.accountFull
-            },
-            details: message
-          },
-          { request, env, context }
-        )
-      )
-      return new Response(JSON.stringify(message), {
+      return new Response(JSON.stringify({ ...message, badge: stored.badge }), {
         headers: { 'Content-Type': 'application/json' }
       })
     }
@@ -153,7 +141,8 @@ const send = async (
         {
           context: {
             ...request.params,
-            accountFull: stored.accountFull
+            accountFull: stored.account.accountFull,
+            badge: stored.badge
           },
           details: message
         },
