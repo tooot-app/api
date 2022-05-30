@@ -15,7 +15,7 @@ export type BodyRequest = {
 }
 export type BodyResponse = {
   provider: string
-  sourceLanguage: string
+  sourceLanguage?: string
   text: string[]
 }
 
