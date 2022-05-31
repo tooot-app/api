@@ -32,7 +32,7 @@ jobs:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           workingDirectory: './packages/${{ matrix.package }}'
           preCommands: yarn
-          command: publish --outdir ./dist/ --minify --env ${{ steps.branch.outputs.branch }}
+          command: publish --outdir ./dist/ --env ${{ steps.branch.outputs.branch }}
       - name: -- Step 4 -- Create Sentry release
         uses: getsentry/action-release@v1
         env:
