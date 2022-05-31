@@ -104,28 +104,9 @@ const send = async (
         headers: { 'Content-Type': 'application/json' }
       })
     }
-    const readAllChunks = async (readableStream: ReadableStream) => {
-      const reader = readableStream.getReader()
-      const chunks = []
-
-      let done, value
-      while (!done) {
-        ;({ value, done } = await reader.read())
-        if (done) {
-          return chunks
-        }
-        chunks.push(value)
-      }
-    }
-    const bodyStream = await readAllChunks(request.body)
-    if (!bodyStream) {
-      return new Response('[send] Cannot read body stream', {
-        status: 400
-      })
-    }
 
     const message = await decode({
-      body: Buffer.concat(bodyStream),
+      body: Buffer.from(await request.arrayBuffer()),
       keys: {
         auth: tempAuth,
         private: tempPrivate,
