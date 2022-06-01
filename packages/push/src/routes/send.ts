@@ -14,6 +14,10 @@ const send = async (
 
   const headers = Object.fromEntries(request.headers) as HeadersSend
 
+  if (headers['content-encoding'] !== 'aesgcm') {
+    return new Response('[send] Encoding error', { status: 403 })
+  }
+
   if (!headers['crypto-key']) {
     return new Response('[send] Are you a legit server?', { status: 403 })
   }
