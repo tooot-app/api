@@ -1,4 +1,3 @@
-import Buffer from 'buffer/'
 import { DurableObjectDevice, Env, HeadersSend, ParamsSend } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
@@ -88,7 +87,7 @@ const send = async (
     }
 
     const message = await decode({
-      body: Buffer.Buffer.from(await request.clone().arrayBuffer()),
+      body: Buffer.from(await request.arrayBuffer()),
       keys: {
         auth: tempAuth,
         private: tempPrivate,
