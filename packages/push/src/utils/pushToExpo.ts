@@ -89,6 +89,7 @@ const pushToExpo = async (
         } = await res.json()
 
         await logToNR(workers.env.NEW_RELIC_KEY, {
+          tooot_push_type: message.details?.notification_type,
           expoToken: message.context.expoToken,
           instanceUrl: message.context.instanceUrl,
           ...body
