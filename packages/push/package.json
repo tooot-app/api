@@ -8,6 +8,7 @@
     "dev": "wrangler dev"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
     "create-ecdh": "4.0.4",
     "itty-router": "^2.4.10",
     "toucan-js": "^2.5.0"

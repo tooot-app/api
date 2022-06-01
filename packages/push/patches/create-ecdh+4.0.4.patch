@@ -129,13 +129,14 @@ index 3613b45..0000000
 -  }
 -}
 diff --git a/node_modules/create-ecdh/index.js b/node_modules/create-ecdh/index.js
-index 841d085..a457983 100644
+index 841d085..960a02d 100644
 --- a/node_modules/create-ecdh/index.js
 +++ b/node_modules/create-ecdh/index.js
-@@ -1,3 +1,126 @@
+@@ -1,3 +1,127 @@
 -var createECDH = require('crypto').createECDH
 +import elliptic from 'elliptic'
 +import BN from 'bn.js'
++import Buffer from 'buffer/'
  
 -module.exports = createECDH || require('./browser')
 +const createECDH = (curve) => {
@@ -197,8 +198,8 @@ index 841d085..a457983 100644
 +
 +ECDH.prototype.computeSecret = function (other, inenc, enc) {
 +  inenc = inenc || 'utf8'
-+  if (!Buffer.isBuffer(other)) {
-+    other = Buffer.from(other, inenc)
++  if (!Buffer.Buffer.isBuffer(other)) {
++    other = new Buffer.Buffer(other, inenc)
 +  }
 +  var otherPub = this.curve.keyFromPublic(other).getPublic()
 +  var out = otherPub.mul(this.keys.getPrivate()).getX()
@@ -223,8 +224,8 @@ index 841d085..a457983 100644
 +
 +ECDH.prototype.setPublicKey = function (pub, enc) {
 +  enc = enc || 'utf8'
-+  if (!Buffer.isBuffer(pub)) {
-+    pub = Buffer.from(pub, enc)
++  if (!Buffer.Buffer.isBuffer(pub)) {
++    pub = new Buffer.Buffer(pub, enc)
 +  }
 +  this.keys._importPublic(pub)
 +  return this
@@ -232,8 +233,8 @@ index 841d085..a457983 100644
 +
 +ECDH.prototype.setPrivateKey = function (priv, enc) {
 +  enc = enc || 'utf8'
-+  if (!Buffer.isBuffer(priv)) {
-+    priv = Buffer.from(priv, enc)
++  if (!Buffer.Buffer.isBuffer(priv)) {
++    priv = new Buffer.Buffer(priv, enc)
 +  }
 +
 +  var _priv = new BN(priv)
@@ -247,11 +248,11 @@ index 841d085..a457983 100644
 +  if (!Array.isArray(bn)) {
 +    bn = bn.toArray()
 +  }
-+  var buf = Buffer.from(bn)
++  var buf = new Buffer.Buffer(bn)
 +  if (len && buf.length < len) {
-+    var zeros = Buffer.from(len - buf.length)
++    var zeros = new Buffer.Buffer(len - buf.length)
 +    zeros.fill(0)
-+    buf = Buffer.concat([zeros, buf])
++    buf = Buffer.Buffer.concat([zeros, buf])
 +  }
 +  if (!enc) {
 +    return buf
