@@ -4,7 +4,8 @@
   "author": "xmflsct <me@xmflsct.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "wrangler dev"
+    "dev": "wrangler dev",
+    "send": "NODE_TLS_REJECT_UNAUTHORIZED=0 node ./scripts/sendPush.js"
   },
   "dependencies": {
     "create-ecdh": "4.0.4",
