@@ -29,8 +29,17 @@ export type ParamsUpdateDecode = ParamsGlobal
 export type BodyUpdateDecode = { auth?: string }
 
 // POST /send/${pathGlobal}
+// https://github.com/mastodon/mastodon/blob/main/spec/workers/web/push_notification_worker_spec.rb
 export type ParamsSend = ParamsGlobal
-export type HeadersSend = { 'crypto-key': string; encryption: string }
+export type HeadersSend = {
+  'content-encoding': string
+  'content-type': string
+  'crypto-key': string
+  encryption: string
+  ttl: string
+  urgency: string
+  authorization: string
+}
 
 export type DurableObjectDevice = { durableObject: DurableObjectStub }
 

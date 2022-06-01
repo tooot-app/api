@@ -6,13 +6,22 @@ webpush.setVapidDetails(
   'OQCuLAUk4fwCiZSxEplH1nbnHWmRyxH30hUsjc3tylY'
 )
 
+// const pushSubscription = {
+//   endpoint:
+//     'https://localhost:8787/push/send/ExponentPushToken[TEST-1]/instance-1/1',
+//   keys: {
+//     auth: 'BTBZMqHH6r4Tts7J_aSIgg',
+//     p256dh:
+//       'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+//   }
+// }
 const pushSubscription = {
   endpoint:
-    'https://localhost:8787/push/send/ExponentPushToken[TEST-1]/instance-1/1',
+    'https://api-candidate.tooot.app/push/send/ExponentPushToken[TEST-1]/instance-1/1',
   keys: {
     auth: 'BTBZMqHH6r4Tts7J_aSIgg',
     p256dh:
-      'BCVxsr7N_eNgVRqvHtD0zTZsEc6-VV-JvLexhqUzORcxaOzi6-AYWXvTBHm4bjyPjs7Vd8pZGH6SRpkNtoIAiw4'
+      'BMn2PLpZrMefG981elzG6SB1EY9gU7QZwmtZ/a/J2vUeWG+zXgeskMPwHh4T/bxsD4l7/8QT94F57CbZqYRRfJo'
   }
 }
 
