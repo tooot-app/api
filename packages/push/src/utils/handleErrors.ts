@@ -45,7 +45,9 @@ const handleErrors = (
         )
       })()
     )
-    return new Response(message, { status: 400 })
+    return new Response(message, {
+      status: env.ENVIRONMENT !== 'release' ? 200 : 400
+    })
   } else {
     sentry.setTag('status', 500)
     context.waitUntil(
@@ -54,7 +56,9 @@ const handleErrors = (
         sentry.captureException(err)
       })()
     )
-    return new Response(message, { status: 500 })
+    return new Response(message, {
+      status: env.ENVIRONMENT !== 'release' ? 200 : 500
+    })
   }
 }
 
