@@ -116,7 +116,7 @@ export class Device {
       }
     )
     router.post(
-      `/send${pathGlobal}`,
+      `/send${pathGlobal}/:random?`,
       async (request: Request & ParamsSend): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         const accounts = await this.state.storage.get<Accounts>('accounts', {
