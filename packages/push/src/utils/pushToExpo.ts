@@ -65,7 +65,7 @@ const pushToExpo = async (
     }
   }
 
-  if (workers.env.ENVIRONMENT === 'release') {
+  if (workers.env.ENVIRONMENT !== 'development') {
     await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
