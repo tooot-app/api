@@ -15,6 +15,11 @@ const handleErrors = (
     context: Pick<ExecutionContext, 'waitUntil'>
   }
 ): Response => {
+  if (env.ENVIRONMENT === 'development') {
+    console.error(err)
+    return new Response(null, { status: 500 })
+  }
+
   const sentry = sentryCapture(type, { request, env, context })
 
   const message = err instanceof Error ? err.message : 'Unknown error'
@@ -40,7 +45,9 @@ const handleErrors = (
         )
       })()
     )
-    return new Response(message, { status: 400 })
+    return new Response(message, {
+      status: env.ENVIRONMENT !== 'release' ? 200 : 400
+    })
   } else {
     sentry.setTag('status', 500)
     context.waitUntil(
@@ -49,7 +56,9 @@ const handleErrors = (
         sentry.captureException(err)
       })()
     )
-    return new Response(message, { status: 500 })
+    return new Response(message, {
+      status: env.ENVIRONMENT !== 'release' ? 200 : 500
+    })
   }
 }
 

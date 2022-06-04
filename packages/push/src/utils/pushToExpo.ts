@@ -8,6 +8,7 @@ export type Message = {
     instanceUrl: string
     accountId: string
     accountFull: string
+    badge: number
   }
   details?: {
     access_token: string
@@ -35,10 +36,10 @@ const pushToExpo = async (
     toPush = {
       to: message.context.expoToken,
       sound: 'default',
-      badge: 1,
       title: message.details.title,
       subtitle: message.context.accountFull,
       body: message.details.body,
+      badge: message.context.badge,
       data: {
         instanceUrl: message.context.instanceUrl,
         accountId: message.context.accountId,
@@ -52,9 +53,9 @@ const pushToExpo = async (
     toPush = {
       to: message.context.expoToken,
       sound: 'default',
-      badge: 1,
       title: message.context.accountFull,
       body: '🔔',
+      badge: message.context.badge,
       data: {
         instanceUrl: message.context.instanceUrl,
         accountId: message.context.accountId,
@@ -64,7 +65,7 @@ const pushToExpo = async (
     }
   }
 
-  if (workers.env.ENVIRONMENT === 'release') {
+  if (workers.env.ENVIRONMENT !== 'development') {
     await fetch('https://exp.host/--/api/v2/push/send', {
       method: 'POST',
       headers: {
@@ -88,6 +89,7 @@ const pushToExpo = async (
         } = await res.json()
 
         await logToNR(workers.env.NEW_RELIC_KEY, {
+          tooot_push_type: message.details?.notification_type,
           expoToken: message.context.expoToken,
           instanceUrl: message.context.instanceUrl,
           ...body
@@ -101,28 +103,6 @@ const pushToExpo = async (
             }
           )
         }
-
-        if (res.status !== 200) {
-          const sentry = sentryCapture('expo - push ticket', workers)
-          sentry.setExtras(body)
-          sentry.captureException(res)
-        }
-      })
-      .catch(err => {
-        const sentry = sentryCapture('expo - error', workers)
-        sentry.captureException(err)
-      })
-  } else {
-    await fetch('https://api.tooot.app/cdn-cgi/trace')
-      .then(async res => {
-        const body: any = await res.text()
-
-        await workers.request.durableObject.fetch(
-          `${new URL(workers.request.url).origin}/push/do/count-error`,
-          {
-            method: 'PUT'
-          }
-        )
 
         if (res.status !== 200) {
           const sentry = sentryCapture('expo - push ticket', workers)

@@ -29,6 +29,7 @@ export class Device {
   accounts: Accounts
   account?: string
   errorCounts?: number
+  badge: number
 
   constructor(state: DurableObjectState, env: Env) {
     this.state = state
@@ -36,6 +37,7 @@ export class Device {
     this.accounts = {}
     this.account = undefined
     this.errorCounts = undefined
+    this.badge = 0
   }
 
   fetch = async (request: Request) => {
@@ -56,6 +58,9 @@ export class Device {
         this.errorCounts = 0
         this.state.storage.put('errorCounts', this.errorCounts)
       }
+
+      this.badge = 0
+      this.state.storage.put('badge', this.badge)
 
       await this.state.storage.put('connectedTimestamp', new Date().getTime())
       return new Response()
@@ -111,7 +116,7 @@ export class Device {
       }
     )
     router.post(
-      `/send${pathGlobal}`,
+      `/send${pathGlobal}/:random?`,
       async (request: Request & ParamsSend): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         const accounts = await this.state.storage.get<Accounts>('accounts', {
@@ -141,7 +146,13 @@ export class Device {
             status: 404
           })
         }
-        return new Response(JSON.stringify(accounts[this.account]))
+
+        this.badge = ((await this.state.storage.get<number>('badge')) || 0) + 1
+        await this.state.storage.put('badge', this.badge)
+
+        return new Response(
+          JSON.stringify({ account: accounts[this.account], badge: this.badge })
+        )
       }
     )
 
@@ -152,6 +163,12 @@ export class Device {
       })
       this.errorCounts = (this.errorCounts || 0) + 1
       this.state.storage.put('errorCounts', this.errorCounts)
+
+      this.badge = (await this.state.storage.get<number>('badge')) || 0
+      if (this.badge > 0) {
+        this.badge = this.badge - 1
+      }
+      await this.state.storage.put('badge', this.badge)
       return new Response()
     })
 

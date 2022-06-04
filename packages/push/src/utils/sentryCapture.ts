@@ -34,7 +34,7 @@ const sentryCapture = (
     ],
     allowedSearchParams: /(.*)/,
     rewriteFrames: {
-      root: '/dist/'
+      iteratee: frame => ({ ...frame, filename: frame.filename?.substring(1) })
     }
   })
 

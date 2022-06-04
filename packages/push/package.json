@@ -1,29 +1,21 @@
 {
   "name": "tooot-push",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "author": "xmflsct <me@xmflsct.com>",
   "license": "MIT",
-  "module": "./dist/index.mjs",
   "scripts": {
-    "postinstall": "patch-package",
-    "build": "esbuild --bundle --format=esm --main-fields=browser,module,main --platform=neutral --target=es2020 --sourcemap --minify --outfile=./dist/index.mjs ./src/index.ts",
-    "dev": "miniflare dist/index.mjs --debug --watch --do-persist",
-    "deploy": "wrangler publish --env"
+    "dev": "wrangler dev",
+    "send": "NODE_TLS_REJECT_UNAUTHORIZED=0 node ./scripts/sendPush.js"
   },
   "dependencies": {
-    "buffer": "6.0.3",
     "create-ecdh": "4.0.4",
     "itty-router": "^2.4.10",
     "toucan-js": "^2.5.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^3.3.1",
-    "@cloudflare/wrangler": "^1.19.7",
     "@types/node": "^17.0.10",
-    "esbuild": "^0.14.11",
-    "miniflare": "^2.2.0",
-    "patch-package": "^6.4.7",
-    "postinstall-postinstall": "^2.1.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.5.5",
+    "web-push": "^3.5.0"
   }
 }
