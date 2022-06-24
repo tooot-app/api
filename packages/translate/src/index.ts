@@ -4,6 +4,7 @@ import checkBody from './middlewares/checkBody'
 import checkCache from './middlewares/checkCache'
 import sanitizeBody from './middlewares/sanitizeBody'
 import useDeepL from './middlewares/useDeepL'
+import useGoogle from './middlewares/useGoogle'
 import useIBM from './middlewares/useIBM'
 import handleErrors from './utils/handleErrors'
 
@@ -41,6 +42,7 @@ router.post(
   checkBody,
   checkCache,
   sanitizeBody,
+  useGoogle,
   useIBM,
   // useDeepL,
   cacheAndReturn

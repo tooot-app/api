@@ -55,7 +55,7 @@ const useIBM = async (
     ) {
       delete request.bodyJson.source
     }
-    if (!languages.source.includes(request.bodyJson.target)) {
+    if (!languages.target.includes(request.bodyJson.target)) {
       return new Response(JSON.stringify({ error: 'target_not_supported' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
