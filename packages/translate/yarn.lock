@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@cloudflare/workers-types@^3.11.0":
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.11.0.tgz#8067dede888ea495cae06898d5e75e4401acf435"
-  integrity sha512-XmKgZZHrCdPsoVQkdd365R7GvwTwDVJsMyEG3Dq/Tgxz6vgrps2c8PXBqEutguwvl0zDAF0AL0e2Z8WG9Dffjw==
+"@cloudflare/workers-types@^3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.13.0.tgz#4483374809e328535ff136a73fb9c51fa3423e01"
+  integrity sha512-oyhzfYlWBLgd9odJ/WHcsD/8B+IaAjSD+OcPEGLzX5kGRONjwcW3NY0WQfsVIhQzZ6AbPzjwkmj4D2VFwU1xRQ==
 
 "@sentry/core@6.19.6":
   version "6.19.6"
@@ -60,11 +60,6 @@
   integrity sha512-7Lu2zMQnmHHQGKXVvCOhSziQMpa+R2hMHFefzbYoYMHeaXR0uXqNeOc3JeQQQ8/6Xa2Br/P1IQTLzV09xxAiUQ==
   dependencies:
     htmlparser2 "^6.0.0"
-
-"@types/uuid@8.3.4":
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
-  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
 
 cookie@0.5.0:
   version "0.5.0"
@@ -218,32 +213,25 @@ stacktrace-js@2.0.2:
     stack-generator "^2.0.5"
     stacktrace-gps "^3.0.4"
 
-toucan-js@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/toucan-js/-/toucan-js-2.6.0.tgz#d814ceb48dd1e4b2871aec1cd88eba4b1da6c015"
-  integrity sha512-gc1rvCuQhGnczs7Z9HLZNLXk2LW0He67DRsTm9bZX041bXJNJfOSQ3Eer1B0njkInMhsvZJh6EOI+Uga9o0jsw==
+toucan-js@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/toucan-js/-/toucan-js-2.6.1.tgz#358ce4251da34b72e29d764c823f1407c37a03df"
+  integrity sha512-G0D6lkfsQBWJhHgSagFCTc0QTWoAVfjouVZXGNv1L/N9YN2r41R0daqzpFHcAwbS4VrOTDgyiXzamfRDdub4sA==
   dependencies:
     "@sentry/core" "6.19.6"
     "@sentry/hub" "6.19.6"
     "@sentry/types" "6.19.6"
     "@sentry/utils" "6.19.6"
     "@types/cookie" "0.5.0"
-    "@types/uuid" "8.3.4"
     cookie "0.5.0"
     stacktrace-js "2.0.2"
-    uuid "8.3.2"
 
 tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-typescript@^4.6.4:
-  version "4.6.4"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.6.4.tgz#caa78bbc3a59e6a5c510d35703f6a09877ce45e9"
-  integrity sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==
-
-uuid@8.3.2:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+typescript@^4.7.4:
+  version "4.7.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.4.tgz#1a88596d1cf47d59507a1bcdfb5b9dfe4d488235"
+  integrity sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==
