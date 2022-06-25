@@ -1,4 +1,4 @@
-import { NewRequest } from '..'
+import { Context, Env } from '..'
 
 const sha256 = async (message: string) => {
   const msgBuffer = new TextEncoder().encode(message)
@@ -8,10 +8,20 @@ const sha256 = async (message: string) => {
   return hashHex
 }
 
-const checkCache = async (request: NewRequest): Promise<Response | void> => {
+const checkCache = async (
+  request: Request,
+  _e: Env,
+  context: Context
+): Promise<Response | void> => {
   const cache = caches.default
 
-  const hash = await sha256(JSON.stringify(request.bodyJson))
+  const hash = await sha256(
+    JSON.stringify({
+      source: context.incoming.source,
+      target: context.incoming.target,
+      text: context.incoming.text
+    })
+  )
   const cacheUrl = new URL(request.url)
   cacheUrl.pathname = '/cache/translate' + '/' + hash
 
@@ -25,7 +35,7 @@ const checkCache = async (request: NewRequest): Promise<Response | void> => {
       headers: cacheHitHeaders
     })
   } else {
-    request.cacheKey = cacheKey
+    context.cacheKey = cacheKey
   }
 }
 
