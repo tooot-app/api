@@ -1,11 +1,8 @@
-import { Env, NewRequest } from '..'
+import { Context, Env } from '..'
 import languageName from '../utils/languageName'
 
-const useIBM = async (
-  request: NewRequest,
-  env: Env
-): Promise<Response | void> => {
-  if (!request.translation) {
+const useIBM = async (_r: Request, env: Env, context: Context) => {
+  if (!context.outgoing) {
     let languages: {
       source: string[]
       target: string[]
@@ -50,12 +47,19 @@ const useIBM = async (
     }
 
     if (
-      request.bodyJson.source &&
-      !languages.source.includes(request.bodyJson.source)
+      context.incoming.source &&
+      !languages.source.includes(context.incoming.source)
     ) {
-      delete request.bodyJson.source
+      delete context.incoming.source
     }
-    if (!languages.target.includes(request.bodyJson.target)) {
+    if (!languages.target.includes(context.incoming.target)) {
+      context.log({
+        message: {
+          tooot_translate_provider: 'IBM',
+          error_type: 'target_not_supported'
+        },
+        succeed: false
+      })
       return new Response(JSON.stringify({ error: 'target_not_supported' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -76,29 +80,46 @@ const useIBM = async (
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            ...(request.bodyJson.source && { source: request.bodyJson.source }),
-            text: request.bodyJson.text,
-            target: request.bodyJson.target
+            ...(context.incoming.source && { source: context.incoming.source }),
+            text: context.incoming.text,
+            target: context.incoming.target
           })
         }
       )
     ).json()
 
     if (translation.code && translation.code === 404) {
+      context.log({
+        message: {
+          tooot_translate_provider: 'IBM',
+          error_type: 'source_not_supported'
+        },
+        succeed: false
+      })
       return new Response(JSON.stringify({ error: 'source_not_supported' }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
       })
     }
     if (!translation.translations || !Array.isArray(translation.translations)) {
+      context.log({
+        message: {
+          tooot_translate_provider: 'IBM',
+          error_type: 'translation_failed',
+          error: JSON.stringify(translation)
+        },
+        succeed: false
+      })
       throw new Error(JSON.stringify(translation))
     }
 
-    request.translation = {
+    context.log({ message: { tooot_translate_provider: 'IBM' } })
+
+    context.outgoing = {
       provider: 'IBM',
       sourceLanguage: languageName({
-        source: request.bodyJson.source || translation.detected_language,
-        target: request.bodyJson.target
+        source: context.incoming.source || translation.detected_language,
+        target: context.incoming.target
       }),
       text: translation.translations.map(t => t.translation)
     }
