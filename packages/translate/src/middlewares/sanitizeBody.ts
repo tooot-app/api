@@ -1,24 +1,18 @@
 import sanitize from 'sanitize-html'
-import { NewRequest } from '..'
+import { Context, Env } from '..'
 
-const sanitizeBody = ({ bodyJson }: NewRequest) => {
+const sanitizeBody = (_r: Request, _e: Env, { incoming }: Context) => {
   // https://github.com/google/cld3#supported-languages
   // Remove some confusing languages, like new and old Norwegian shown as only `no`
-  if (bodyJson.source) {
-    switch (bodyJson.source) {
-      case 'no':
-        bodyJson.source = undefined
-        break
-      default:
-        bodyJson.source = bodyJson.source.slice(0, 2)
-        break
-    }
-  }
-  if (bodyJson.target) {
-    bodyJson.target = bodyJson.target.slice(0, 2)
+  // Google translate supported `no` as Norwegian
+  if (incoming.source) {
+    incoming.source = incoming.source.slice(0, 2)
   }
 
-  bodyJson.text = bodyJson.text.map(t =>
+  incoming.target = incoming.target.slice(0, 2)
+
+  incoming.textRaw = [...incoming.text]
+  incoming.text = incoming.text.map(t =>
     sanitize(t, {
       allowedTags: ['p', 'br'],
       allowedAttributes: {},
@@ -26,6 +20,12 @@ const sanitizeBody = ({ bodyJson }: NewRequest) => {
       exclusiveFilter: frame => frame.tag !== 'br' && !frame.text.trim()
     }).trim()
   )
+
+  if (!incoming.text.filter(t => t.length > 0)) {
+    throw new Error('sanitized_text_empty')
+  }
+
+  incoming.textLength = incoming.text.join('').length + 1
 }
 
 export default sanitizeBody

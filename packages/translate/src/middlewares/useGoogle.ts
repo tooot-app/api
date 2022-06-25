@@ -1,10 +1,10 @@
-import { NewRequest } from '..'
+import { Context, Env } from '..'
 import languageName from '../utils/languageName'
 
 // Source https://github.com/vitalets/google-translate-api as wrangler 2 cannot polyfill well
 
-const useGoogle = async (request: NewRequest): Promise<Response | void> => {
-  if (!request.translation) {
+const useGoogle = async (request: Request, env: Env, context: Context) => {
+  if (!context.outgoing) {
     const rpcids = 'MkEWBc'
 
     const baseURL = 'https://translate.google.com'
@@ -37,9 +37,9 @@ const useGoogle = async (request: NewRequest): Promise<Response | void> => {
           rpcids,
           JSON.stringify([
             [
-              request.bodyJson.text.join('\n\n'),
-              request.bodyJson.source,
-              request.bodyJson.target,
+              context.incoming.text.join('\n\n'),
+              context.incoming.source,
+              context.incoming.target,
               false
             ],
             [null]
@@ -64,7 +64,15 @@ const useGoogle = async (request: NewRequest): Promise<Response | void> => {
           }
         )
       ).text()
-    } catch {
+    } catch (error) {
+      context.log({
+        message: {
+          tooot_translate_provider: 'google',
+          error_type: 'translate_request_failed',
+          error
+        },
+        succeed: false
+      })
       return
     }
 
@@ -96,7 +104,15 @@ const useGoogle = async (request: NewRequest): Promise<Response | void> => {
         json.slice(length.length, parseInt(length, 10) + length.length)
       )
       json = JSON.parse(json[0][2])
-    } catch {
+    } catch (error) {
+      context.log({
+        message: {
+          tooot_translate_provider: 'google',
+          error_type: 'parse_json_failed',
+          error
+        },
+        succeed: false
+      })
       return
     }
 
@@ -143,11 +159,13 @@ const useGoogle = async (request: NewRequest): Promise<Response | void> => {
       }
     }
 
-    request.translation = {
+    context.log({ message: { tooot_translate_provider: 'google' } })
+
+    context.outgoing = {
       provider: 'Google',
       sourceLanguage: languageName({
         source: result.from.language.iso,
-        target: request.bodyJson.target
+        target: context.incoming.target
       }),
       text: [result.text]
     }

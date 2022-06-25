@@ -1,23 +1,19 @@
-import { Env, NewRequest } from '..'
+import { Context, Env } from '..'
 
-const cacheAndReturn = (
-  request: NewRequest,
-  _: Env,
-  context: ExecutionContext
-): Response => {
-  if (!request.cacheKey) {
+const cacheAndReturn = (_r: Request, _e: Env, context: Context): Response => {
+  if (!context.cacheKey) {
     throw new Error('Missing cache handler')
   }
-  if (!request.translation) {
+  if (!context.outgoing) {
     throw new Error('Missing translation')
   }
 
-  const response = new Response(JSON.stringify(request.translation), {
+  const response = new Response(JSON.stringify(context.outgoing), {
     headers: {
       'content-type': 'application/json;charset=UTF-8'
     }
   })
-  context.waitUntil(caches.default.put(request.cacheKey, response.clone()))
+  context.waitUntil(caches.default.put(context.cacheKey, response.clone()))
   response.headers.set('tooot-Cache', 'MISS')
   return response
 }
