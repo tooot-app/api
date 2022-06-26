@@ -1,4 +1,4 @@
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 
 const sha256 = async (message: string): Promise<string> => {
   const msgBuffer = new TextEncoder().encode(message)
@@ -9,15 +9,14 @@ const sha256 = async (message: string): Promise<string> => {
 }
 
 const checkCache = async (
-  request: Request,
-  _e: Env,
-  context: Context
+  request: TheRequest,
+  _e: Env
 ): Promise<Response | void> => {
   const hash = await sha256(
     JSON.stringify({
-      source: context.incoming.source,
-      target: context.incoming.target,
-      text: context.incoming.text
+      source: request.incoming.source,
+      target: request.incoming.target,
+      text: request.incoming.text
     })
   )
 
@@ -31,7 +30,7 @@ const checkCache = async (
 
   if (cacheHit) {
     console.log('cache hit')
-    context.log({ message: { tooot_translate_provider: 'cache' } })
+    request.log({ message: { tooot_translate_provider: 'cache' } })
 
     const cacheHitHeaders = new Headers(cacheHit.headers)
     cacheHitHeaders.set('tooot-Cache', 'HIT')
@@ -40,7 +39,7 @@ const checkCache = async (
     })
   } else {
     console.log('cache not hit')
-    context.cacheKey = cacheKey
+    request.cacheKey = cacheKey
   }
 }
 

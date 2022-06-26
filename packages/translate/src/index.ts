@@ -11,17 +11,7 @@ import handleErrors from './utils/handleErrors'
 
 // POST /
 
-export type Env = {
-  ENVIRONMENT: 'development' | 'candidate' | 'release'
-  IBM_KEY: string
-  DEEPL_KEY: string
-  SENTRY_DSN: string
-  NEW_RELIC_KEY: string
-  // KV
-  LANGUAGES: KVNamespace
-}
-
-export type Context = ExecutionContext & {
+export type TheRequest = Request & {
   incoming: {
     source?: string
     target: string
@@ -36,6 +26,16 @@ export type Context = ExecutionContext & {
     text: string[]
   }
   log: ({ message, succeed }: { message: Object; succeed?: boolean }) => void
+}
+
+export type Env = {
+  ENVIRONMENT: 'development' | 'candidate' | 'release'
+  IBM_KEY: string
+  DEEPL_KEY: string
+  SENTRY_DSN: string
+  NEW_RELIC_KEY: string
+  // KV
+  LANGUAGES: KVNamespace
 }
 
 const router = Router({ base: '/translate' })
@@ -54,7 +54,7 @@ router.post(
 router.all('*', () => new Response(null, { status: 404 }))
 
 export default {
-  fetch: (request: Request, env: Env, context: Context) =>
+  fetch: (request: Request, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
       .catch((err: unknown) =>

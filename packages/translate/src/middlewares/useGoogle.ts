@@ -1,10 +1,10 @@
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 import languageName from '../utils/languageName'
 
 // Source https://github.com/vitalets/google-translate-api as wrangler 2 cannot polyfill well
 
-const useGoogle = async (_r: Request, _e: Env, context: Context) => {
-  if (!context.outgoing) {
+const useGoogle = async (request: TheRequest, _e: Env) => {
+  if (!request.outgoing) {
     const rpcids = 'MkEWBc'
 
     const baseURL = 'https://translate.google.com'
@@ -37,9 +37,9 @@ const useGoogle = async (_r: Request, _e: Env, context: Context) => {
           rpcids,
           JSON.stringify([
             [
-              context.incoming.text.join('\n\n'),
-              context.incoming.source,
-              context.incoming.target,
+              request.incoming.text.join('\n\n'),
+              request.incoming.source,
+              request.incoming.target,
               false
             ],
             [null]
@@ -65,7 +65,7 @@ const useGoogle = async (_r: Request, _e: Env, context: Context) => {
         )
       ).text()
     } catch (error) {
-      context.log({
+      request.log({
         message: {
           tooot_translate_provider: 'google',
           error_type: 'translate_request_failed',
@@ -105,7 +105,7 @@ const useGoogle = async (_r: Request, _e: Env, context: Context) => {
       )
       json = JSON.parse(json[0][2])
     } catch (error) {
-      context.log({
+      request.log({
         message: {
           tooot_translate_provider: 'google',
           error_type: 'parse_json_failed',
@@ -159,13 +159,13 @@ const useGoogle = async (_r: Request, _e: Env, context: Context) => {
       }
     }
 
-    context.log({ message: { tooot_translate_provider: 'google' } })
+    request.log({ message: { tooot_translate_provider: 'google' } })
 
-    context.outgoing = {
+    request.outgoing = {
       provider: 'Google',
       sourceLanguage: languageName({
         source: result.from.language.iso,
-        target: context.incoming.target
+        target: request.incoming.target
       }),
       text: [result.text]
     }
