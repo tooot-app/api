@@ -29,7 +29,7 @@ export type Context = ExecutionContext & {
     text: string[]
     textLength: number
   }
-  cacheKey: string
+  cacheKey: Request
   outgoing: {
     provider: string
     sourceLanguage?: string
@@ -43,9 +43,9 @@ const router = Router({ base: '/translate' })
 router.post(
   '/',
   checkBody,
+  prepareNR,
   checkCache,
   sanitizeBody,
-  prepareNR,
   useGoogle,
   useIBM,
   // useDeepL,

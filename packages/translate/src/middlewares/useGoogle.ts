@@ -3,7 +3,7 @@ import languageName from '../utils/languageName'
 
 // Source https://github.com/vitalets/google-translate-api as wrangler 2 cannot polyfill well
 
-const useGoogle = async (request: Request, env: Env, context: Context) => {
+const useGoogle = async (_r: Request, _e: Env, context: Context) => {
   if (!context.outgoing) {
     const rpcids = 'MkEWBc'
 
