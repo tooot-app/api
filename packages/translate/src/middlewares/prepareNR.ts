@@ -1,15 +1,19 @@
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 
-const prepareNR = async (_r: Request, env: Env, context: Context) => {
-  context.log = ({ message, succeed = true }) => {
+const prepareNR = async (
+  request: TheRequest,
+  env: Env,
+  context: ExecutionContext
+) => {
+  request.log = ({ message, succeed = true }) => {
     const log = JSON.stringify({
       translation_succeed: succeed,
       incoming_translation: !succeed
-        ? context.incoming
+        ? request.incoming
         : {
-            source: context.incoming.source,
-            target: context.incoming.target,
-            textLength: context.incoming.textLength
+            source: request.incoming.source,
+            target: request.incoming.target,
+            textLength: request.incoming.textLength
           },
       ...message
     })

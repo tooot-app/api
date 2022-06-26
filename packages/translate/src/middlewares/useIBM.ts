@@ -1,8 +1,8 @@
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 import languageName from '../utils/languageName'
 
-const useIBM = async (_r: Request, env: Env, context: Context) => {
-  if (!context.outgoing) {
+const useIBM = async (request: TheRequest, env: Env) => {
+  if (!request.outgoing) {
     let languages: {
       source: string[]
       target: string[]
@@ -47,13 +47,13 @@ const useIBM = async (_r: Request, env: Env, context: Context) => {
     }
 
     if (
-      context.incoming.source &&
-      !languages.source.includes(context.incoming.source)
+      request.incoming.source &&
+      !languages.source.includes(request.incoming.source)
     ) {
-      delete context.incoming.source
+      delete request.incoming.source
     }
-    if (!languages.target.includes(context.incoming.target)) {
-      context.log({
+    if (!languages.target.includes(request.incoming.target)) {
+      request.log({
         message: {
           tooot_translate_provider: 'IBM',
           error_type: 'target_not_supported'
@@ -80,16 +80,16 @@ const useIBM = async (_r: Request, env: Env, context: Context) => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            ...(context.incoming.source && { source: context.incoming.source }),
-            text: context.incoming.text,
-            target: context.incoming.target
+            ...(request.incoming.source && { source: request.incoming.source }),
+            text: request.incoming.text,
+            target: request.incoming.target
           })
         }
       )
     ).json()
 
     if (translation.code && translation.code === 404) {
-      context.log({
+      request.log({
         message: {
           tooot_translate_provider: 'IBM',
           error_type: 'source_not_supported'
@@ -102,7 +102,7 @@ const useIBM = async (_r: Request, env: Env, context: Context) => {
       })
     }
     if (!translation.translations || !Array.isArray(translation.translations)) {
-      context.log({
+      request.log({
         message: {
           tooot_translate_provider: 'IBM',
           error_type: 'translation_failed',
@@ -113,13 +113,13 @@ const useIBM = async (_r: Request, env: Env, context: Context) => {
       throw new Error(JSON.stringify(translation))
     }
 
-    context.log({ message: { tooot_translate_provider: 'IBM' } })
+    request.log({ message: { tooot_translate_provider: 'IBM' } })
 
-    context.outgoing = {
+    request.outgoing = {
       provider: 'IBM',
       sourceLanguage: languageName({
-        source: context.incoming.source || translation.detected_language,
-        target: context.incoming.target
+        source: request.incoming.source || translation.detected_language,
+        target: request.incoming.target
       }),
       text: translation.translations.map(t => t.translation)
     }
