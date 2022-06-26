@@ -1,5 +1,5 @@
 import Toucan from 'toucan-js'
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 
 const handleErrors = (
   type: string,
@@ -9,9 +9,9 @@ const handleErrors = (
     env,
     context
   }: {
-    request: Request
+    request: TheRequest
     env: Env
-    context: Context
+    context: ExecutionContext
   }
 ): Response => {
   if (env.ENVIRONMENT === 'development') {
@@ -51,7 +51,7 @@ const handleErrors = (
     request.headers.get('x-forwarded-for')
   const userAgent = request.headers.get('user-agent') || ''
   sentry.setUser({ ip: ipAddress, userAgent: userAgent, colo: colo })
-  sentry.setExtras({ body: context.incoming })
+  sentry.setExtras({ body: request.incoming })
 
   const message = err instanceof Error ? err.message : 'Unknown error'
   console.warn(message)

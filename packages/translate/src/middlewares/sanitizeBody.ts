@@ -1,7 +1,7 @@
 import sanitize from 'sanitize-html'
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 
-const sanitizeBody = (_r: Request, _e: Env, { incoming }: Context) => {
+const sanitizeBody = ({ incoming }: TheRequest, _e: Env) => {
   // https://github.com/google/cld3#supported-languages
   // Remove some confusing languages, like new and old Norwegian shown as only `no`
   // Google translate supported `no` as Norwegian

@@ -11,6 +11,23 @@ import handleErrors from './utils/handleErrors'
 
 // POST /
 
+export type TheRequest = Request & {
+  incoming: {
+    source?: string
+    target: string
+    textRaw: string[]
+    text: string[]
+    textLength: number
+  }
+  cacheKey: Request
+  outgoing: {
+    provider: string
+    sourceLanguage?: string
+    text: string[]
+  }
+  log: ({ message, succeed }: { message: Object; succeed?: boolean }) => void
+}
+
 export type Env = {
   ENVIRONMENT: 'development' | 'candidate' | 'release'
   IBM_KEY: string
@@ -21,31 +38,14 @@ export type Env = {
   LANGUAGES: KVNamespace
 }
 
-export type Context = ExecutionContext & {
-  incoming: {
-    source?: string
-    target: string
-    textRaw: string[]
-    text: string[]
-    textLength: number
-  }
-  cacheKey: string
-  outgoing: {
-    provider: string
-    sourceLanguage?: string
-    text: string[]
-  }
-  log: ({ message, succeed }: { message: Object; succeed?: boolean }) => void
-}
-
 const router = Router({ base: '/translate' })
 
 router.post(
   '/',
   checkBody,
+  prepareNR,
   checkCache,
   sanitizeBody,
-  prepareNR,
   useGoogle,
   useIBM,
   // useDeepL,
@@ -54,7 +54,7 @@ router.post(
 router.all('*', () => new Response(null, { status: 404 }))
 
 export default {
-  fetch: (request: Request, env: Env, context: Context) =>
+  fetch: (request: Request, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
       .catch((err: unknown) =>

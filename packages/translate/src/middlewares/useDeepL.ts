@@ -1,11 +1,11 @@
-import { Context, Env } from '..'
+import { Env, TheRequest } from '..'
 import languageName from '../utils/languageName'
 
-const useDeepL = async (request: Request, env: Env, context: Context) => {
-  if (!context.outgoing) {
+const useDeepL = async (request: TheRequest, env: Env) => {
+  if (!request.outgoing) {
     const params = new URLSearchParams()
-    params.append('target_lang', context.incoming.target)
-    for (const t of context.incoming.text) {
+    params.append('target_lang', request.incoming.target)
+    for (const t of request.incoming.text) {
       params.append('text', t)
     }
     params.append('tag_handling', 'xml')
@@ -23,13 +23,13 @@ const useDeepL = async (request: Request, env: Env, context: Context) => {
       )
     ).json()
 
-    context.outgoing = {
+    request.outgoing = {
       provider: 'DeepL',
       sourceLanguage: languageName({
         source:
-          context.incoming.source ||
+          request.incoming.source ||
           translation.translations[0].detected_source_language,
-        target: context.incoming.target
+        target: request.incoming.target
       }),
       text: translation.translations.map(t => t.text)
     }
