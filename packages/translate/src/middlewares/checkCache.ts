@@ -29,7 +29,6 @@ const checkCache = async (
   const cacheHit = await cache.match(cacheKey)
 
   if (cacheHit) {
-    console.log('cache hit')
     request.log({ message: { tooot_translate_provider: 'cache' } })
 
     const cacheHitHeaders = new Headers(cacheHit.headers)
