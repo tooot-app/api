@@ -19,6 +19,10 @@ export type Message = {
     title: string
     body: string
   }
+  extra: {
+    decode: boolean
+    legacy?: boolean
+  }
 }
 
 const pushToExpo = async (
@@ -92,6 +96,8 @@ const pushToExpo = async (
           tooot_push_type: message.details?.notification_type,
           expoToken: message.context.expoToken,
           instanceUrl: message.context.instanceUrl,
+          push_decode: message.extra.decode,
+          push_legacy: message.extra.legacy,
           ...body
         })
 
