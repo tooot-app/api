@@ -69,7 +69,8 @@ const send = async (
             ...request.params,
             accountFull: stored.account.accountFull,
             badge: stored.badge
-          }
+          },
+          extra: { decode: false }
         },
         { request, env, context }
       )
@@ -116,7 +117,11 @@ const send = async (
             accountFull: stored.account.accountFull,
             badge: stored.badge
           },
-          details: message
+          details: message,
+          extra: {
+            decode: true,
+            legacy: !!stored.account.legacyKeys?.auth
+          }
         },
         { request, env, context }
       )
