@@ -2,14 +2,35 @@ import sanitize from 'sanitize-html'
 import { Env, TheRequest } from '..'
 
 const sanitizeBody = ({ incoming }: TheRequest, _e: Env) => {
-  // https://github.com/google/cld3#supported-languages
-  // Remove some confusing languages, like new and old Norwegian shown as only `no`
-  // Google translate supported `no` as Norwegian
   if (incoming.source) {
-    incoming.source = incoming.source.slice(0, 2)
+    const _source = incoming.source.toLowerCase()
+    console.log('_source', _source)
+    switch (_source) {
+      case 'zh-hans':
+        incoming.source = 'zh-cn'
+        break
+      case 'zh-hant':
+        incoming.source = 'zh-tw'
+        break
+      default:
+        incoming.source = incoming.source.slice(0, 2)
+        break
+    }
   }
 
-  incoming.target = incoming.target.slice(0, 2)
+  const _target = incoming.target.toLowerCase()
+  console.log('_target', _target)
+  switch (_target) {
+    case 'zh-hans':
+      incoming.target = 'zh-cn'
+      break
+    case 'zh-hant':
+      incoming.target = 'zh-tw'
+      break
+    default:
+      incoming.target = incoming.target.slice(0, 2)
+      break
+  }
 
   incoming.textRaw = [...incoming.text]
   incoming.text = incoming.text.map(t =>

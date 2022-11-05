@@ -1,13 +1,9 @@
 import { Env, TheRequest } from '..'
 
-const cacheAndReturn = (
+const respond = (
   request: TheRequest,
-  _e: Env,
-  context: ExecutionContext
+  _e: Env
 ): Response => {
-  if (!request.cacheKey) {
-    throw new Error('Missing cache handler')
-  }
   if (!request.outgoing) {
     throw new Error('Missing translation')
   }
@@ -17,9 +13,7 @@ const cacheAndReturn = (
       'content-type': 'application/json;charset=UTF-8'
     }
   })
-  context.waitUntil(caches.default.put(request.cacheKey, response.clone()))
-  response.headers.set('tooot-Cache', 'MISS')
   return response
 }
 
-export default cacheAndReturn
+export default respond
