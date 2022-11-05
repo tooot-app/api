@@ -33,12 +33,3 @@ jobs:
           workingDirectory: './packages/${{ matrix.package }}'
           preCommands: yarn
           command: publish --outdir ./dist/ --env ${{ steps.branch.outputs.branch }}
-      - name: -- Step 4 -- Create Sentry release
-        uses: getsentry/action-release@v1
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ matrix.package }}
-        with:
-          environment: ${{ steps.branch.outputs.branch }}
-          sourcemaps: './packages/${{ matrix.package }}/dist'

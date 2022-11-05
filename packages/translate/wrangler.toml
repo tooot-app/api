@@ -1,12 +1,12 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
-compatibility_date = "2022-05-30"
+compatibility_date = "2022-11-04"
 main = "./src/index.ts"
 
 node_compat = true
 name = "tooot-translate-development"
 vars = {ENVIRONMENT = "development"}
 kv_namespaces = [ 
-  { binding = "LANGUAGES", preview_id = "acd48872fdf244b8a83ef4a00c0656c4", id="" }
+  { binding = "LANGUAGES", preview_id = "65df9e7d4fd740278104e7b6885bde05", id="65df9e7d4fd740278104e7b6885bde05" }
 ]
 
 [env.candidate]

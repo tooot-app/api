@@ -36,10 +36,10 @@ const useIBM = async (request: TheRequest, env: Env) => {
       languages = {
         source: availableLanguages.languages
           .filter(lang => lang.supported_as_source)
-          .map(lang => lang.language.slice(0, 2)),
+          .map(lang => lang.language),
         target: availableLanguages.languages
           .filter(lang => lang.supported_as_target)
-          .map(lang => lang.language.slice(0, 2))
+          .map(lang => lang.language)
       }
       await env.LANGUAGES.put('IBM', JSON.stringify(languages), {
         expirationTtl: 60 * 60 * 24 * 30
@@ -52,7 +52,7 @@ const useIBM = async (request: TheRequest, env: Env) => {
     ) {
       delete request.incoming.source
     }
-    if (!languages.target.includes(request.incoming.target)) {
+    if (request.incoming.target !== 'zh' && !languages.target.includes(request.incoming.target)) {
       request.log({
         message: {
           tooot_translate_provider: 'IBM',
