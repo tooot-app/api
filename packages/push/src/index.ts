@@ -5,6 +5,7 @@ import send from './routes/send'
 import subscribe from './routes/subscribe'
 import universal from './routes/universal'
 import handleErrors from './utils/handleErrors'
+import logToNR from './utils/logToNR'
 
 export type ParamsGlobal = {
   params: { expoToken: string; instanceUrl: string; accountId: string }
@@ -79,13 +80,19 @@ router.post(`/send${pathGlobal}/:random?`, getDurableObject, send)
 
 router.get('/admin/expoToken/:expoToken', getDurableObject, universal)
 
-router.all('*', (): Response => new Response(null, { status: 404 }))
+router.all('*', (_: Request, env: Env, context: ExecutionContext): Response => {
+  context.waitUntil(
+    logToNR(env.NEW_RELIC_KEY, {
+      tooot_push_log: 'error_no_route',
+      workers_type: 'workers'
+    })
+  )
+  return new Response(null, { status: 404 })
+})
 
 export default {
   fetch: (request: Request, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
-      .catch((err: unknown) =>
-        handleErrors('workers - fetch', err, { request, env, context })
-      )
+      .catch((err: unknown) => handleErrors('workers - fetch', err, { request, env, context }))
 }
