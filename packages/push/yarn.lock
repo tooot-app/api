@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-"@cloudflare/workers-types@^3.3.1":
-  version "3.11.0"
-  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.11.0.tgz#8067dede888ea495cae06898d5e75e4401acf435"
-  integrity sha512-XmKgZZHrCdPsoVQkdd365R7GvwTwDVJsMyEG3Dq/Tgxz6vgrps2c8PXBqEutguwvl0zDAF0AL0e2Z8WG9Dffjw==
+"@cloudflare/workers-types@^3.18.0":
+  version "3.18.0"
+  resolved "https://registry.yarnpkg.com/@cloudflare/workers-types/-/workers-types-3.18.0.tgz#b4177cbe9306d7df4654db594d6e77c036341d2e"
+  integrity sha512-ehKOJVLMeR+tZkYhWEaLYQxl0TaIZu/kE86HF3/RidR8Xv5LuQxpbh+XXAoKVqsaphWLhIgBhgnlN5HGdheXSQ==
 
 "@sentry/core@6.19.6":
   version "6.19.6"
@@ -54,15 +54,10 @@
   resolved "https://registry.yarnpkg.com/@types/cookie/-/cookie-0.5.0.tgz#14ebcd209f2555e341548c31128d4deb34dfb2b0"
   integrity sha512-CJWHVHHupxBYfIlMM+qzXx4dRKIV1VzOm0cP3Wpqten8MDx1tK+y92YDXUshN1ONAfwodvKxDNkw35/pNs+izg==
 
-"@types/node@^17.0.10":
-  version "17.0.35"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-17.0.35.tgz#635b7586086d51fb40de0a2ec9d1014a5283ba4a"
-  integrity sha512-vu1SrqBjbbZ3J6vwY17jBs8Sr/BKA+/a/WtjRG+whKg1iuLFOosq872EXS0eXWILdO36DHQQeku/ZcL6hz2fpg==
-
-"@types/uuid@8.3.4":
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-8.3.4.tgz#bd86a43617df0594787d38b735f55c805becf1bc"
-  integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
+"@types/node@^18.11.9":
+  version "18.11.9"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.11.9.tgz#02d013de7058cea16d36168ef2fc653464cfbad4"
+  integrity sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==
 
 agent-base@6:
   version "6.0.2"
@@ -180,10 +175,10 @@ inherits@^2.0.1, inherits@^2.0.3, inherits@^2.0.4:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-itty-router@^2.4.10:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/itty-router/-/itty-router-2.6.1.tgz#eecb59fa25b5f6f519276cc5bcaaa1cb341d5fee"
-  integrity sha512-l9gxWe5TOLUESYnBn85Jxd6tIZLWdRX5YKkHIBfSgbNQ7UFPNUGuWihRV+LlEbfJJIzgLmhwAbaWRi5yWJm8kg==
+itty-router@^2.6.6:
+  version "2.6.6"
+  resolved "https://registry.yarnpkg.com/itty-router/-/itty-router-2.6.6.tgz#78a08c3b7dc1bd90ce832cae8eff7e4cbfbf67ef"
+  integrity sha512-hIPHtXGymCX7Lzb2I4G6JgZFE4QEEQwst9GORK7sMYUpJvLfy4yZJr95r04e8DzoAnj6HcxM2m4TbK+juu+18g==
 
 jwa@^2.0.0:
   version "2.0.0"
@@ -266,40 +261,33 @@ stacktrace-js@2.0.2:
     stack-generator "^2.0.5"
     stacktrace-gps "^3.0.4"
 
-toucan-js@^2.5.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/toucan-js/-/toucan-js-2.6.0.tgz#d814ceb48dd1e4b2871aec1cd88eba4b1da6c015"
-  integrity sha512-gc1rvCuQhGnczs7Z9HLZNLXk2LW0He67DRsTm9bZX041bXJNJfOSQ3Eer1B0njkInMhsvZJh6EOI+Uga9o0jsw==
+toucan-js@^2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/toucan-js/-/toucan-js-2.7.0.tgz#3d7e39294ed4fff1c9aaddd71ce0fdcd537040a0"
+  integrity sha512-vbvRbFfMLN2Jf9lOkwL1KwIwuCcS/ko0MVACZTYTnbdVlVjsIviwCU0inH0CRcMXCvFAS+uL8z/gSV3y7FpZUQ==
   dependencies:
     "@sentry/core" "6.19.6"
     "@sentry/hub" "6.19.6"
     "@sentry/types" "6.19.6"
     "@sentry/utils" "6.19.6"
     "@types/cookie" "0.5.0"
-    "@types/uuid" "8.3.4"
     cookie "0.5.0"
     stacktrace-js "2.0.2"
-    uuid "8.3.2"
 
 tslib@^1.9.3:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-typescript@^4.5.5:
-  version "4.7.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.7.2.tgz#1f9aa2ceb9af87cca227813b4310fff0b51593c4"
-  integrity sha512-Mamb1iX2FDUpcTRzltPxgWMKy3fhg0TN378ylbktPGPK/99KbDtMQ4W1hwgsbPAsG3a0xKa1vmw4VKZQbkvz5A==
+typescript@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
+  integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
 
 urlsafe-base64@^1.0.0, urlsafe-base64@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/urlsafe-base64/-/urlsafe-base64-1.0.0.tgz#23f89069a6c62f46cf3a1d3b00169cefb90be0c6"
   integrity sha1-I/iQaabGL0bPOh07ABac77kL4MY=
-
-uuid@8.3.2:
-  version "8.3.2"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
-  integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
 
 web-push@^3.5.0:
   version "3.5.0"
