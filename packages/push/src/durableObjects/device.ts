@@ -49,9 +49,10 @@ export class Device {
             workers_type: 'durable_object',
             expoToken: request.params.expoToken
           })
-          return new Response('Your device has zero account registered', {
-            status: 404
-          })
+          return new Response(
+            JSON.stringify({ error: 'Your device has zero account registered' }),
+            { status: 404 }
+          )
         }
 
         this.errorCounts = await this.state.storage.get<number>('errorCounts')
@@ -108,7 +109,10 @@ export class Device {
             expoToken: request.params.expoToken,
             instanceUrl: request.params.instanceUrl
           })
-          return new Response('Could not find corresponding account to update', { status: 404 })
+          return new Response(
+            JSON.stringify({ error: 'Could not find corresponding account to update' }),
+            { status: 404 }
+          )
         }
         this.accounts[this.account].auth = body.auth
         if (!body.auth && this.accounts[this.account].legacyKeys) {
@@ -132,7 +136,10 @@ export class Device {
             expoToken: request.params.expoToken,
             instanceUrl: request.params.instanceUrl
           })
-          return new Response('Could not find corresponding account to send to', { status: 404 })
+          return new Response(
+            JSON.stringify({ error: 'Could not find corresponding account to send to' }),
+            { status: 404 }
+          )
         }
 
         this.errorCounts = await this.state.storage.get<number>('errorCounts', {
@@ -146,7 +153,7 @@ export class Device {
             expoToken: request.params.expoToken,
             instanceUrl: request.params.instanceUrl
           })
-          return new Response("Device's errorCounts reached limit", {
+          return new Response(JSON.stringify({ error: "Device's errorCounts reached limit" }), {
             status: 404
           })
         }

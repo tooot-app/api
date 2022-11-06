@@ -18,7 +18,7 @@ const subscribe = async (
         body
       })
     )
-    return new Response('[subscribe] Data error', { status: 400 })
+    return new Response(JSON.stringify({ error: '[subscribe] Data error' }), { status: 400 })
   }
 
   return await request.durableObject.fetch(request.url, {
