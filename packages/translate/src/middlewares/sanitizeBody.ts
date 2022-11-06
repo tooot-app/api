@@ -4,32 +4,22 @@ import { Env, TheRequest } from '..'
 const sanitizeBody = ({ incoming }: TheRequest, _e: Env) => {
   if (incoming.source) {
     const _source = incoming.source.toLowerCase()
-    console.log('_source', _source)
-    switch (_source) {
-      case 'zh-hans':
-        incoming.source = 'zh-cn'
-        break
-      case 'zh-hant':
-        incoming.source = 'zh-tw'
-        break
-      default:
-        incoming.source = incoming.source.slice(0, 2)
-        break
+    incoming.source = incoming.source.slice(0, 2)
+    if (_source.startsWith('zh-hans')) {
+      incoming.source = 'zh-cn'
+    }
+    if (_source.startsWith('zh-hant')) {
+      incoming.source = 'zh-tw'
     }
   }
 
   const _target = incoming.target.toLowerCase()
-  console.log('_target', _target)
-  switch (_target) {
-    case 'zh-hans':
-      incoming.target = 'zh-cn'
-      break
-    case 'zh-hant':
-      incoming.target = 'zh-tw'
-      break
-    default:
-      incoming.target = incoming.target.slice(0, 2)
-      break
+  incoming.target = incoming.target.slice(0, 2)
+  if (_target.startsWith('zh-hans')) {
+    incoming.target = 'zh-cn'
+  }
+  if (_target.startsWith('zh-hant')) {
+    incoming.target = 'zh-tw'
   }
 
   incoming.textRaw = [...incoming.text]
