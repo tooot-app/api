@@ -10,38 +10,42 @@ const send = async (
   context: ExecutionContext
 ): Promise<Response> => {
   if (!request.body) {
-    return new Response('[send] Request body empty', { status: 400 })
+    return new Response(JSON.stringify({ error: '[send] Request body empty' }), { status: 400 })
   }
 
   const headers = Object.fromEntries(request.headers) as HeadersSend
 
   if (headers['content-encoding'] !== 'aesgcm') {
-    return new Response('[send] Encoding error', { status: 403 })
+    return new Response(JSON.stringify({ error: '[send] Encoding error' }), { status: 403 })
   }
 
   if (!headers['crypto-key']) {
-    return new Response('[send] Are you a legit server?', { status: 403 })
+    return new Response(JSON.stringify({ error: '[send] Are you a legit server?' }), {
+      status: 403
+    })
   }
 
   const regexServerKey = new RegExp(/dh=.*;p256ecdsa=(.*)/)
   const getServerKey = headers['crypto-key'].match(regexServerKey)
   if (!getServerKey || !getServerKey[1]) {
-    return new Response('[send] Cannot find serverKey in crypto-key header', {
-      status: 400
-    })
+    return new Response(
+      JSON.stringify({ error: '[send] Cannot find serverKey in crypto-key header' }),
+      { status: 400 }
+    )
   }
 
   const regexCryptoKey = new RegExp(/dh=(.*);p256ecdsa=/)
   const getCryptoKey = headers['crypto-key'].match(regexCryptoKey)
   if (!getCryptoKey || !getCryptoKey[1]) {
-    return new Response('[send] Cannot find crypto key in crypto-key header', {
-      status: 403
-    })
+    return new Response(
+      JSON.stringify({ error: '[send] Cannot find crypto key in crypto-key header' }),
+      { status: 403 }
+    )
   }
   const regexEncryption = new RegExp(/salt=(.*)/)
   const getEncryption = headers.encryption.match(regexEncryption)
   if (!getEncryption || !getEncryption[1]) {
-    return new Response('[send] Cannot find encryption key in header', {
+    return new Response(JSON.stringify({ error: '[send] Cannot find encryption key in header' }), {
       status: 403
     })
   }
@@ -53,9 +57,10 @@ const send = async (
   const stored: { account: Account; badge: number } = await resDO.json()
 
   if (`${getServerKey[1]}=` !== stored.account.serverKey) {
-    return new Response('[send] serverKey in crypto-key header does not match record', {
-      status: 403
-    })
+    return new Response(
+      JSON.stringify({ error: '[send] serverKey in crypto-key header does not match record' }),
+      { status: 403 }
+    )
   }
 
   if (!stored.account.auth && !stored.account.legacyKeys?.auth) {
@@ -92,7 +97,7 @@ const send = async (
           workers_type: 'durable_object'
         })
       )
-      return new Response('[send] No auth key found', { status: 404 })
+      return new Response(JSON.stringify({ error: '[send] No auth key found' }), { status: 404 })
     }
 
     const message = await decode({
