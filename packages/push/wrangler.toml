@@ -1,5 +1,5 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
-compatibility_date = "2022-11-04"
+compatibility_date = "2022-05-30"
 main = "./src/index.ts"
 
 node_compat = true
