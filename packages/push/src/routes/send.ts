@@ -1,6 +1,7 @@
 import { DurableObjectDevice, Env, HeadersSend, ParamsSend } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
+import logToNR from '../utils/logToNR'
 import pushToExpo from '../utils/pushToExpo'
 
 const send = async (
@@ -52,12 +53,9 @@ const send = async (
   const stored: { account: Account; badge: number } = await resDO.json()
 
   if (`${getServerKey[1]}=` !== stored.account.serverKey) {
-    return new Response(
-      '[send] serverKey in crypto-key header does not match record',
-      {
-        status: 403
-      }
-    )
+    return new Response('[send] serverKey in crypto-key header does not match record', {
+      status: 403
+    })
   }
 
   if (!stored.account.auth && !stored.account.legacyKeys?.auth) {
@@ -88,6 +86,12 @@ const send = async (
       tempPrivate = stored.account.legacyKeys.private
       tempAuth = stored.account.legacyKeys.auth
     } else {
+      context.waitUntil(
+        logToNR(env.NEW_RELIC_KEY, {
+          tooot_push_log: 'error_no_route',
+          workers_type: 'durable_object'
+        })
+      )
       return new Response('[send] No auth key found', { status: 404 })
     }
 

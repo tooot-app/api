@@ -1,11 +1,5 @@
 import { Router } from 'itty-router'
-import {
-  BodyUpdateDecode,
-  Env,
-  ParamsSend,
-  ParamsSubscribe,
-  ParamsUpdateDecode
-} from '..'
+import { BodyUpdateDecode, Env, ParamsSend, ParamsSubscribe, ParamsUpdateDecode } from '..'
 import handleErrors from '../utils/handleErrors'
 import logToNR from '../utils/logToNR'
 
@@ -45,26 +39,34 @@ export class Device {
     const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
     // Matching original request
-    router.get('/connect/:expoToken', async (): Promise<Response> => {
-      this.accounts = (await this.state.storage.get('accounts')) || {}
-      if (Object.keys(this.accounts).length === 0) {
-        return new Response('Your device has zero account registered', {
-          status: 404
-        })
+    router.get(
+      '/connect/:expoToken',
+      async (request: Request & ParamsSubscribe): Promise<Response> => {
+        this.accounts = (await this.state.storage.get('accounts')) || {}
+        if (Object.keys(this.accounts).length === 0) {
+          await logToNR(this.env.NEW_RELIC_KEY, {
+            tooot_push_log: 'error_no_device',
+            workers_type: 'durable_object',
+            expoToken: request.params.expoToken
+          })
+          return new Response('Your device has zero account registered', {
+            status: 404
+          })
+        }
+
+        this.errorCounts = await this.state.storage.get<number>('errorCounts')
+        if (this.errorCounts && this.errorCounts > 0) {
+          this.errorCounts = 0
+          this.state.storage.put('errorCounts', this.errorCounts)
+        }
+
+        this.badge = 0
+        this.state.storage.put('badge', this.badge)
+
+        await this.state.storage.put('connectedTimestamp', new Date().getTime())
+        return new Response()
       }
-
-      this.errorCounts = await this.state.storage.get<number>('errorCounts')
-      if (this.errorCounts && this.errorCounts > 0) {
-        this.errorCounts = 0
-        this.state.storage.put('errorCounts', this.errorCounts)
-      }
-
-      this.badge = 0
-      this.state.storage.put('badge', this.badge)
-
-      await this.state.storage.put('connectedTimestamp', new Date().getTime())
-      return new Response()
-    })
+    )
     router.post(
       `/subscribe${pathGlobal}`,
       async (request: Request & ParamsSubscribe): Promise<Response> => {
@@ -100,12 +102,13 @@ export class Device {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
         if (!this.accounts[this.account]) {
-          return new Response(
-            'Could not find corresponding account to update',
-            {
-              status: 404
-            }
-          )
+          await logToNR(this.env.NEW_RELIC_KEY, {
+            tooot_push_log: 'error_decode_no_account',
+            workers_type: 'durable_object',
+            expoToken: request.params.expoToken,
+            instanceUrl: request.params.instanceUrl
+          })
+          return new Response('Could not find corresponding account to update', { status: 404 })
         }
         this.accounts[this.account].auth = body.auth
         if (!body.auth && this.accounts[this.account].legacyKeys) {
@@ -123,12 +126,13 @@ export class Device {
           allowConcurrency: true
         })
         if (!accounts || !accounts[this.account]) {
-          return new Response(
-            'Could not find corresponding account to send to',
-            {
-              status: 404
-            }
-          )
+          await logToNR(this.env.NEW_RELIC_KEY, {
+            tooot_push_log: 'error_send_no_account',
+            workers_type: 'durable_object',
+            expoToken: request.params.expoToken,
+            instanceUrl: request.params.instanceUrl
+          })
+          return new Response('Could not find corresponding account to send to', { status: 404 })
         }
 
         this.errorCounts = await this.state.storage.get<number>('errorCounts', {
@@ -150,9 +154,7 @@ export class Device {
         this.badge = ((await this.state.storage.get<number>('badge')) || 0) + 1
         await this.state.storage.put('badge', this.badge)
 
-        return new Response(
-          JSON.stringify({ account: accounts[this.account], badge: this.badge })
-        )
+        return new Response(JSON.stringify({ account: accounts[this.account], badge: this.badge }))
       }
     )
 
@@ -174,13 +176,18 @@ export class Device {
 
     // Admin
     router.get('/admin/expoToken/:expoToken', async (): Promise<Response> => {
-      return new Response(
-        JSON.stringify(Object.fromEntries(await this.state.storage.list())),
-        { headers: { 'Content-Type': 'application/json' } }
-      )
+      return new Response(JSON.stringify(Object.fromEntries(await this.state.storage.list())), {
+        headers: { 'Content-Type': 'application/json' }
+      })
     })
 
-    router.all('*', (): Response => new Response(null, { status: 404 }))
+    router.all('*', async (): Promise<Response> => {
+      await logToNR(this.env.NEW_RELIC_KEY, {
+        tooot_push_log: 'error_no_route',
+        workers_type: 'durable_object'
+      })
+      return new Response(null, { status: 404 })
+    })
 
     return router.handle(request).catch((err: unknown) =>
       handleErrors('durable objects - device', err, {
