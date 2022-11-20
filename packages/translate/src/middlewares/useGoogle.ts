@@ -38,7 +38,7 @@ const useGoogle = async (request: TheRequest, _e: Env) => {
           JSON.stringify([
             [
               request.incoming.text.join('\n\n'),
-              request.incoming.source,
+              'auto',
               request.incoming.target,
               false
             ],
