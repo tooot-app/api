@@ -1,14 +1,20 @@
-import { DurableObjectDevice, Env, HeadersSend, ParamsSend } from '..'
+import { IRequest } from 'itty-router'
+import { Env, HeadersSend, ParamsSend, WithDurableObject } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
 import logToNR from '../utils/logToNR'
 import pushToExpo from '../utils/pushToExpo'
 
 const send = async (
-  request: Request & DurableObjectDevice & ParamsSend,
+  request: ParamsSend & WithDurableObject & IRequest,
   env: Env,
   context: ExecutionContext
 ): Promise<Response> => {
+  if (!request.durableObject)
+    return new Response(JSON.stringify({ error: '[send] Missing durable object' }), {
+      status: 500
+    })
+
   if (!request.body) {
     return new Response(JSON.stringify({ error: '[send] Request body empty' }), { status: 400 })
   }
@@ -68,6 +74,7 @@ const send = async (
       pushToExpo(
         env.EXPO_ACCESS_TOKEN_PUSH,
         {
+          // @ts-ignore
           context: {
             ...request.params,
             accountFull: stored.account.accountFull,
@@ -121,6 +128,7 @@ const send = async (
       pushToExpo(
         env.EXPO_ACCESS_TOKEN_PUSH,
         {
+          // @ts-ignore
           context: {
             ...request.params,
             accountFull: stored.account.accountFull,
