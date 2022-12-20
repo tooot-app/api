@@ -1,4 +1,5 @@
-import { DurableObjectDevice, Env } from '..'
+import { IRequest } from 'itty-router'
+import { Env, WithDurableObject } from '..'
 import logToNR from './logToNR'
 import sentryCapture from './sentryCapture'
 
@@ -29,7 +30,7 @@ const pushToExpo = async (
   token: string,
   message: Message,
   workers: {
-    request: Request & DurableObjectDevice
+    request: IRequest
     env: Env
     context: Pick<ExecutionContext, 'waitUntil'>
   }
@@ -102,11 +103,9 @@ const pushToExpo = async (
         })
 
         if (body.data?.status === 'error') {
-          await workers.request.durableObject.fetch(
+          await workers.request.durableObject?.fetch(
             `${new URL(workers.request.url).origin}/push/do/count-error`,
-            {
-              method: 'PUT'
-            }
+            { method: 'PUT' }
           )
         }
 

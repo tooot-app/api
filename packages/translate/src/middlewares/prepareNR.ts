@@ -1,11 +1,8 @@
-import { Env, TheRequest } from '..'
+import { IRequest } from 'itty-router'
+import { Env } from '..'
 
-const prepareNR = async (
-  request: TheRequest,
-  env: Env,
-  context: ExecutionContext
-) => {
-  request.log = ({ message, succeed = true }) => {
+const prepareNR = async (request: IRequest, env: Env, context: ExecutionContext) => {
+  request.log = ({ message, succeed = true }: { message: Object; succeed?: boolean }) => {
     const log = JSON.stringify({
       translation_succeed: succeed,
       incoming_translation: !succeed
@@ -31,7 +28,7 @@ const prepareNR = async (
               'Api-Key': env.NEW_RELIC_KEY
             },
             body: log
-          })
+          }).then(() => {})
         )
         break
     }

@@ -1,7 +1,10 @@
+import { IRequest } from 'itty-router'
 import sanitize from 'sanitize-html'
-import { Env, TheRequest } from '..'
+import { Env, WithIncoming } from '..'
 
-const sanitizeBody = ({ incoming }: TheRequest, _e: Env) => {
+const sanitizeBody = ({ incoming }: WithIncoming & IRequest, _e: Env) => {
+  if (!incoming) throw new Error('Incoming missing')
+
   if (incoming.source) {
     const _source = incoming.source.toLowerCase()
     incoming.source = incoming.source.slice(0, 2)

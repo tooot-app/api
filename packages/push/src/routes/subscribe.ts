@@ -1,12 +1,18 @@
-import { BodySubscribe, DurableObjectDevice, Env, ParamsSubscribe } from '..'
+import { IRequest } from 'itty-router'
+import { BodySubscribe, Env, ParamsSubscribe, WithDurableObject } from '..'
 import logToNR from '../utils/logToNR'
 
 const subscribe = async (
-  request: Request & DurableObjectDevice & ParamsSubscribe,
+  request: ParamsSubscribe & WithDurableObject & IRequest,
   env: Env,
   context: ExecutionContext
 ): Promise<Response> => {
-  const body = await request.json<BodySubscribe>()
+  if (!request.durableObject)
+    return new Response(JSON.stringify({ error: '[subscribe] Missing durable object' }), {
+      status: 500
+    })
+
+  const body: BodySubscribe = await request.json()
 
   if (!body.accountFull || !body.serverKey) {
     context.waitUntil(

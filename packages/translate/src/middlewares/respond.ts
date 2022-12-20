@@ -1,6 +1,7 @@
-import { Env, TheRequest } from '..'
+import { IRequest } from 'itty-router'
+import { Env, WithOutgoing } from '..'
 
-const respond = (request: TheRequest, _e: Env): Response => {
+const respond = (request: WithOutgoing & IRequest, _e: Env): Response => {
   if (!request.outgoing) {
     throw new Error('Missing translation')
   }

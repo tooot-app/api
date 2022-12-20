@@ -1,4 +1,4 @@
-import { Router } from 'itty-router'
+import { IRequest, Route, Router, RouterType } from 'itty-router'
 import { BodyUpdateDecode, Env, ParamsSend, ParamsSubscribe, ParamsUpdateDecode } from '..'
 import handleErrors from '../utils/handleErrors'
 import logToNR from '../utils/logToNR'
@@ -34,14 +34,21 @@ export class Device {
     this.badge = 0
   }
 
-  fetch = async (request: Request) => {
-    const router = Router({ base: '/push' })
+  fetch = async (request: IRequest) => {
+    interface CustomRouter extends RouterType {
+      get: Route
+      post: Route
+      delete: Route
+      put: Route
+      all: Route
+    }
+    const router = <CustomRouter>Router({ base: '/push' })
     const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
     // Matching original request
     router.get(
       '/connect/:expoToken',
-      async (request: Request & ParamsSubscribe): Promise<Response> => {
+      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
         this.accounts = (await this.state.storage.get('accounts')) || {}
         if (Object.keys(this.accounts).length === 0) {
           await logToNR(this.env.NEW_RELIC_KEY, {
@@ -70,13 +77,13 @@ export class Device {
     )
     router.post(
       `/subscribe${pathGlobal}`,
-      async (request: Request & ParamsSubscribe): Promise<Response> => {
+      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
         await this.state.storage.put({
           accounts: {
             ...this.accounts,
-            [this.account]: await request.json<Account>()
+            [this.account]: (await request.json()) as Account
           },
           connectedTimestamp: new Date().getTime()
         })
@@ -85,7 +92,7 @@ export class Device {
     )
     router.delete(
       `/unsubscribe${pathGlobal}`,
-      async (request: Request & ParamsSubscribe): Promise<Response> => {
+      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
         delete this.accounts[this.account]
@@ -98,8 +105,8 @@ export class Device {
     )
     router.put(
       `/update-decode${pathGlobal}`,
-      async (request: Request & ParamsUpdateDecode): Promise<Response> => {
-        const body = await request.json<BodyUpdateDecode>()
+      async (request: ParamsUpdateDecode & IRequest): Promise<Response> => {
+        const body: BodyUpdateDecode = await request.json()
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         this.accounts = (await this.state.storage.get('accounts')) || {}
         if (!this.accounts[this.account]) {
@@ -124,7 +131,7 @@ export class Device {
     )
     router.post(
       `/send${pathGlobal}/:random?`,
-      async (request: Request & ParamsSend): Promise<Response> => {
+      async (request: ParamsSend & IRequest): Promise<Response> => {
         this.account = `${request.params.instanceUrl}/${request.params.accountId}`
         const accounts = await this.state.storage.get<Accounts>('accounts', {
           allowConcurrency: true
