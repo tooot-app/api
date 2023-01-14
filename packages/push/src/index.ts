@@ -1,6 +1,5 @@
 import { IRequest, Route, Router, RouterType } from 'itty-router'
 import getDurableObject from './middlewares/getDurableObject'
-import connect from './routes/connect'
 import send from './routes/send'
 import subscribe from './routes/subscribe'
 import universal from './routes/universal'
@@ -73,7 +72,7 @@ const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
 export type WithDurableObject = { durableObject?: DurableObjectStub }
 
-router.get('/connect/:expoToken', getDurableObject, connect)
+router.get('/connect/:expoToken', getDurableObject, universal)
 router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
 router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
 router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
