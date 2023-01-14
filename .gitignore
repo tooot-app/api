@@ -2,3 +2,12 @@
 /packages/**/.mf
 /packages/**/.dev.vars
 /packages/**/dist
+
+# yarn 3
+/packages/**/.pnp.*
+/packages/**/.yarn/*
+/packages/**/!.yarn/patches
+/packages/**/!.yarn/plugins
+/packages/**/!.yarn/releases
+/packages/**/!.yarn/sdks
+/packages/**/!.yarn/versions
