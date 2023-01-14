@@ -9,7 +9,7 @@ const useGoogle = async (request: WithIncoming & IRequest, _e: Env) => {
 
   if (!request.outgoing) {
     const rpcids = 'MkEWBc'
-
+    console.log('in', request.incoming.text[0])
     const baseURL = 'https://translate.google.com'
     const init = await (await fetch(baseURL)).text()
 
@@ -39,7 +39,7 @@ const useGoogle = async (request: WithIncoming & IRequest, _e: Env) => {
         [
           rpcids,
           JSON.stringify([
-            [request.incoming.text.join('\n\n'), 'auto', request.incoming.target, false],
+            [request.incoming.text[0], 'auto', request.incoming.target, false],
             [null]
           ]),
           null,
@@ -154,7 +154,7 @@ const useGoogle = async (request: WithIncoming & IRequest, _e: Env) => {
         result.from.text.didYouMean = true
       }
     }
-
+    console.log('result.text', result.text)
     request.log({ message: { tooot_translate_provider: 'google' } })
 
     request.outgoing = {

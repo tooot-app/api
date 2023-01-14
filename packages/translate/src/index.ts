@@ -13,7 +13,6 @@ export type WithIncoming = {
   incoming?: {
     source?: string
     target: string
-    textRaw: string[]
     text: string[]
     textLength: number
   }

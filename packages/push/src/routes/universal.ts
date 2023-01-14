@@ -7,7 +7,7 @@ const universal = async (request: WithDurableObject & IRequest): Promise<Respons
       status: 500
     })
 
-  return await request.durableObject.fetch(request.clone())
+  return await request.durableObject.fetch(request as unknown as Request)
 }
 
 export default universal

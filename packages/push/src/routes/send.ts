@@ -31,25 +31,22 @@ const send = async (
     })
   }
 
-  const regexServerKey = new RegExp(/dh=.*;p256ecdsa=(.*)/)
-  const getServerKey = headers['crypto-key'].match(regexServerKey)
-  if (!getServerKey || !getServerKey[1]) {
+  const getKeys = headers['crypto-key'].match(/dh=(.+);p256ecdsa=(.+)/)
+  if (!getKeys || !getKeys[2]) {
     return new Response(
       JSON.stringify({ error: '[send] Cannot find serverKey in crypto-key header' }),
       { status: 400 }
     )
   }
 
-  const regexCryptoKey = new RegExp(/dh=(.*);p256ecdsa=/)
-  const getCryptoKey = headers['crypto-key'].match(regexCryptoKey)
-  if (!getCryptoKey || !getCryptoKey[1]) {
+  if (!getKeys || !getKeys[1]) {
     return new Response(
       JSON.stringify({ error: '[send] Cannot find crypto key in crypto-key header' }),
       { status: 403 }
     )
   }
-  const regexEncryption = new RegExp(/salt=(.*)/)
-  const getEncryption = headers.encryption.match(regexEncryption)
+
+  const getEncryption = headers.encryption.match(/salt=(.*)/)
   if (!getEncryption || !getEncryption[1]) {
     return new Response(JSON.stringify({ error: '[send] Cannot find encryption key in header' }), {
       status: 403
@@ -62,7 +59,7 @@ const send = async (
   }
   const stored: { account: Account; badge: number } = await resDO.json()
 
-  if (`${getServerKey[1]}=` !== stored.account.serverKey) {
+  if (`${getKeys[2]}=` !== stored.account.serverKey) {
     return new Response(
       JSON.stringify({ error: '[send] serverKey in crypto-key header does not match record' }),
       { status: 403 }
@@ -113,7 +110,7 @@ const send = async (
         auth: tempAuth,
         private: tempPrivate,
         public: tempPublic,
-        crypto: getCryptoKey[1],
+        crypto: getKeys[1],
         encryption: getEncryption[1]
       }
     })
