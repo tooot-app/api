@@ -1,26 +1,20 @@
-import { Router } from 'itty-router'
+import { IRequest, Route, Router, RouterType } from 'itty-router'
 import getDurableObject from './middlewares/getDurableObject'
-import connect from './routes/connect'
 import send from './routes/send'
 import subscribe from './routes/subscribe'
 import universal from './routes/universal'
 import handleErrors from './utils/handleErrors'
-import logToNR from './utils/logToNR'
 
 export type ParamsGlobal = {
-  params: { expoToken: string; instanceUrl: string; accountId: string }
+  params: { expoToken?: string; instanceUrl?: string; accountId?: string }
 }
 
 // GET /connect/:expoToken
-export type ParamsConnect = { expoToken: string }
+export type ParamsConnect = { expoToken?: string }
 
 // POST /subscribe/${pathGlobal}
 export type ParamsSubscribe = ParamsGlobal
-export type BodySubscribe = {
-  accountFull: string
-  serverKey: string
-  auth?: string
-}
+export type BodySubscribe = { accountFull?: string; serverKey?: string }
 
 // DELETE /unsubscribe/${pathGlobal}
 export type ParamsUnsubscribe = ParamsGlobal
@@ -41,8 +35,6 @@ export type HeadersSend = {
   urgency: string
   authorization: string
 }
-
-export type DurableObjectDevice = { durableObject: DurableObjectStub }
 
 export { Device } from './durableObjects/device'
 
@@ -68,11 +60,19 @@ export type Env =
       TOOOT_PUSH_DEVICE_DEV: DurableObjectNamespace
     }
 
-const router = Router({ base: '/push' })
+interface CustomRouter extends RouterType {
+  get: Route
+  post: Route
+  delete: Route
+  put: Route
+  all: Route
+}
+const router = <CustomRouter>Router({ base: '/push' })
 const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
-console.log(`/send${pathGlobal}/:random`)
 
-router.get('/connect/:expoToken', getDurableObject, connect)
+export type WithDurableObject = { durableObject?: DurableObjectStub }
+
+router.get('/connect/:expoToken', getDurableObject, universal)
 router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
 router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
 router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
@@ -80,18 +80,10 @@ router.post(`/send${pathGlobal}/:random?`, getDurableObject, send)
 
 router.get('/admin/expoToken/:expoToken', getDurableObject, universal)
 
-router.all('*', (_: Request, env: Env, context: ExecutionContext): Response => {
-  context.waitUntil(
-    logToNR(env.NEW_RELIC_KEY, {
-      tooot_push_log: 'error_no_route',
-      workers_type: 'workers'
-    })
-  )
-  return new Response(null, { status: 404 })
-})
+router.all('*', (): Response => new Response(null, { status: 404 }))
 
 export default {
-  fetch: (request: Request, env: Env, context: ExecutionContext) =>
+  fetch: (request: IRequest, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
       .catch((err: unknown) => handleErrors('workers - fetch', err, { request, env, context }))

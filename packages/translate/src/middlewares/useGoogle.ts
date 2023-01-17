@@ -1,12 +1,15 @@
-import { Env, TheRequest } from '..'
+import { IRequest } from 'itty-router'
+import { Env, WithIncoming } from '..'
 import languageName from '../utils/languageName'
 
 // Source https://github.com/vitalets/google-translate-api as wrangler 2 cannot polyfill well
 
-const useGoogle = async (request: TheRequest, _e: Env) => {
+const useGoogle = async (request: WithIncoming & IRequest, _e: Env) => {
+  if (!request.incoming) throw new Error('Incoming missing')
+
   if (!request.outgoing) {
     const rpcids = 'MkEWBc'
-
+    console.log('in', request.incoming.text[0])
     const baseURL = 'https://translate.google.com'
     const init = await (await fetch(baseURL)).text()
 
@@ -36,12 +39,7 @@ const useGoogle = async (request: TheRequest, _e: Env) => {
         [
           rpcids,
           JSON.stringify([
-            [
-              request.incoming.text.join('\n\n'),
-              'auto',
-              request.incoming.target,
-              false
-            ],
+            [request.incoming.text[0], 'auto', request.incoming.target, false],
             [null]
           ]),
           null,
@@ -100,9 +98,7 @@ const useGoogle = async (request: TheRequest, _e: Env) => {
 
     try {
       length = /^\d+/.exec(json)?.[0] || ''
-      json = JSON.parse(
-        json.slice(length.length, parseInt(length, 10) + length.length)
-      )
+      json = JSON.parse(json.slice(length.length, parseInt(length, 10) + length.length))
       json = JSON.parse(json[0][2])
     } catch (error) {
       request.log({
@@ -158,7 +154,7 @@ const useGoogle = async (request: TheRequest, _e: Env) => {
         result.from.text.didYouMean = true
       }
     }
-
+    console.log('result.text', result.text)
     request.log({ message: { tooot_translate_provider: 'google' } })
 
     request.outgoing = {

@@ -1,4 +1,4 @@
-import { Router } from 'itty-router'
+import { IRequest, Route, Router, RouterType } from 'itty-router'
 import checkBody from './middlewares/checkBody'
 import prepareNR from './middlewares/prepareNR'
 import respond from './middlewares/respond'
@@ -9,19 +9,22 @@ import handleErrors from './utils/handleErrors'
 
 // POST /
 
-export type TheRequest = Request & {
-  incoming: {
+export type WithIncoming = {
+  incoming?: {
     source?: string
     target: string
-    textRaw: string[]
     text: string[]
     textLength: number
   }
-  outgoing: {
+}
+export type WithOutgoing = {
+  outgoing?: {
     provider: string
     sourceLanguage?: string
     text: string[]
   }
+}
+export type WithLog = {
   log: ({ message, succeed }: { message: Object; succeed?: boolean }) => void
 }
 
@@ -34,24 +37,18 @@ export type Env = {
   LANGUAGES: KVNamespace
 }
 
-const router = Router({ base: '/translate' })
+interface CustomRouter extends RouterType {
+  post: Route
+  all: Route
+}
+const router = <CustomRouter>Router({ base: '/translate' })
 
-router.post(
-  '/',
-  checkBody,
-  prepareNR,
-  sanitizeBody,
-  useGoogle,
-  useIBM,
-  respond
-)
+router.post('/', checkBody, prepareNR, sanitizeBody, useGoogle, useIBM, respond)
 router.all('*', () => new Response(null, { status: 404 }))
 
 export default {
-  fetch: (request: TheRequest, env: Env, context: ExecutionContext) =>
+  fetch: (request: IRequest, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
-      .catch((err: unknown) =>
-        handleErrors('workers - fetch', err, { request, env, context })
-      )
+      .catch((err: unknown) => handleErrors('workers - fetch', err, { request, env, context }))
 }

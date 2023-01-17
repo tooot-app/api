@@ -6,6 +6,7 @@ webpush.setVapidDetails(
   'OQCuLAUk4fwCiZSxEplH1nbnHWmRyxH30hUsjc3tylY'
 )
 
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
 const pushSubscription = {
   endpoint:
     'https://localhost:8787/push/send/ExponentPushToken[TEST-1]/instance-1/1/something',

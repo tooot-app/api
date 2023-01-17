@@ -32,11 +32,7 @@ const hkdf = async (
   )
 }
 
-function createInfo(
-  type: 'aesgcm' | 'nonce',
-  clientPublicKey: Buffer,
-  serverPublicKey: Buffer
-) {
+function createInfo(type: 'aesgcm' | 'nonce', clientPublicKey: Buffer, serverPublicKey: Buffer) {
   const len = type.length
 
   const info = Buffer.alloc(18 + len + 1 + 5 + 1 + 2 + 65 + 2 + 65)
@@ -81,23 +77,15 @@ const decode = async ({
   const prk = await hkdf(sharedSecret, decodeAuth, authInfo, 32)
 
   const contentEncryptionKeyInfo = createInfo('aesgcm', decodePublic, cryptoKey)
-  const contentEncryptionKey = await hkdf(
-    prk,
-    salt,
-    contentEncryptionKeyInfo,
-    16
-  )
+  const contentEncryptionKey = await hkdf(prk, salt, contentEncryptionKeyInfo, 16)
 
   const nonceInfo = createInfo('nonce', decodePublic, cryptoKey)
   const nonce = await hkdf(prk, salt, nonceInfo, 12)
 
-  const aesKey = await crypto.subtle.importKey(
-    'raw',
-    contentEncryptionKey,
-    'AES-GCM',
-    true,
-    ['encrypt', 'decrypt']
-  )
+  const aesKey = await crypto.subtle.importKey('raw', contentEncryptionKey, 'AES-GCM', true, [
+    'encrypt',
+    'decrypt'
+  ])
 
   var result: ArrayBuffer = await crypto.subtle.decrypt(
     { name: 'AES-GCM', iv: nonce },
@@ -105,8 +93,7 @@ const decode = async ({
     body
   )
 
-  const message = JSON.parse(Buffer.from(result).toString('utf-8').substring(2))
-  return message
+  return JSON.parse(Buffer.from(result).toString('utf-8').substring(2))
 }
 
 export default decode

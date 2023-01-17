@@ -1,5 +1,6 @@
-import Toucan from 'toucan-js'
-import { Env, TheRequest } from '..'
+import { IRequest } from 'itty-router'
+import { Toucan } from 'toucan-js'
+import { Env } from '..'
 
 const handleErrors = (
   type: string,
@@ -9,7 +10,7 @@ const handleErrors = (
     env,
     context
   }: {
-    request: TheRequest
+    request: IRequest
     env: Env
     context: ExecutionContext
   }
@@ -22,25 +23,9 @@ const handleErrors = (
   const sentry = new Toucan({
     dsn: env.SENTRY_DSN,
     environment: env.ENVIRONMENT,
-    // @ts-ignore
-    release: process.env.RELEASE,
     context,
-    request,
-    allowedHeaders: [
-      'user-agent',
-      'cf-challenge',
-      'accept-encoding',
-      'accept-language',
-      'cf-ray',
-      'content-length',
-      'content-type',
-      'x-real-ip',
-      'host'
-    ],
-    allowedSearchParams: /(.*)/,
-    rewriteFrames: {
-      iteratee: frame => ({ ...frame, filename: frame.filename?.substring(1) })
-    }
+    // @ts-ignore
+    request
   })
 
   sentry.setTag('type', type)

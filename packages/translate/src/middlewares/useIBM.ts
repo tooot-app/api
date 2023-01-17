@@ -1,7 +1,10 @@
-import { Env, TheRequest } from '..'
+import { IRequest } from 'itty-router'
+import { Env, WithIncoming } from '..'
 import languageName from '../utils/languageName'
 
-const useIBM = async (request: TheRequest, env: Env) => {
+const useIBM = async (request: WithIncoming & IRequest, env: Env) => {
+  if (!request.incoming) throw new Error('Incoming missing')
+
   if (!request.outgoing) {
     let languages: {
       source: string[]
@@ -46,10 +49,7 @@ const useIBM = async (request: TheRequest, env: Env) => {
       })
     }
 
-    if (
-      request.incoming.source &&
-      !languages.source.includes(request.incoming.source)
-    ) {
+    if (request.incoming.source && !languages.source.includes(request.incoming.source)) {
       delete request.incoming.source
     }
     if (request.incoming.target !== 'zh' && !languages.target.includes(request.incoming.target)) {

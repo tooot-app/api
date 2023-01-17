@@ -1,4 +1,5 @@
-import { DurableObjectDevice, Env, ParamsGlobal } from '..'
+import { IRequest } from 'itty-router'
+import { Env, ParamsGlobal, WithDurableObject } from '..'
 import logToNR from './logToNR'
 import sentryCapture from './sentryCapture'
 
@@ -10,7 +11,7 @@ const handleErrors = (
     env,
     context
   }: {
-    request: Request & Partial<DurableObjectDevice> & Partial<ParamsGlobal>
+    request: ParamsGlobal & WithDurableObject & IRequest
     env: Env
     context: Pick<ExecutionContext, 'waitUntil'>
   }
@@ -37,12 +38,9 @@ const handleErrors = (
           expoToken: request.params?.expoToken,
           instanceUrl: request.params?.instanceUrl
         })
-        await request.durableObject?.fetch(
-          `${new URL(request.url).origin}/push/do/count-error`,
-          {
-            method: 'PUT'
-          }
-        )
+        await request.durableObject?.fetch(`${new URL(request.url).origin}/push/do/count-error`, {
+          method: 'PUT'
+        })
       })()
     )
     return new Response(message, {
