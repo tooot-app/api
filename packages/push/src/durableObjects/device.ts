@@ -177,7 +177,7 @@ export class Device {
           connectedTimestamp &&
           new Date().getTime() - connectedTimestamp > 1000 * 60 * 60 * 24 * 30
         ) {
-          // await this.state.storage.deleteAll()
+          await this.state.storage.deleteAll()
           await logToNR(this.env.NEW_RELIC_KEY, {
             tooot_push_log: 'error_connected_expired',
             workers_type: 'durable_object',
@@ -185,7 +185,7 @@ export class Device {
             instanceUrl: request.params.instanceUrl,
             connectedTimestamp
           })
-          // return new Response(JSON.stringify({ error: 'Device is not in use' }), { status: 404 })
+          return new Response(JSON.stringify({ error: 'Device is not in use' }), { status: 404 })
         }
 
         this.badge = ((await this.state.storage.get<number>('badge')) || 0) + 1
