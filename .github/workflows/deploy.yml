@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
-      matrix: { package: ['push', 'translate'] }
+      matrix: { package: ['push', 'translate', 'connect'] }
 
     steps:
       - name: -- Step 0 -- Extract branch name
