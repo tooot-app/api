@@ -1,0 +1,22 @@
+account_id = "4b99fe044748e20b67286e12a4f239fb"
+compatibility_date = "2023-01-27"
+main = "./src/index.ts"
+
+node_compat = true
+name = "tooot-connect-development"
+vars = { ENVIRONMENT = "development" }
+
+[dev]
+  local_protocol = "https"
+
+[env.candidate]
+  node_compat = true
+  name = "tooot-connect-candidate"
+  vars = { ENVIRONMENT = "candidate" }
+  route = { pattern = "connect-candidate.tooot.app", zone_name = "tooot.app" }
+
+[env.release]
+  node_compat = true
+  name = "tooot-connect"
+  vars = { ENVIRONMENT = "release" }
+  route = { pattern = "connect.tooot.app", zone_name = "tooot.app" }
