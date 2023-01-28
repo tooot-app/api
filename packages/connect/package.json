@@ -4,7 +4,8 @@
   "author": "xmflsct <me@xmflsct.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "wrangler dev"
+    "dev": "wrangler dev",
+    "list": "node ./scripts/list.js"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20221111.1",

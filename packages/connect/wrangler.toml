@@ -7,16 +7,117 @@ name = "tooot-connect-development"
 vars = { ENVIRONMENT = "development" }
 
 [dev]
-  local_protocol = "https"
+local_protocol = "https"
 
 [env.candidate]
-  node_compat = true
-  name = "tooot-connect-candidate"
-  vars = { ENVIRONMENT = "candidate" }
-  route = { pattern = "connect-candidate.tooot.app/*", zone_name = "tooot.app" }
+node_compat = true
+name = "tooot-connect-candidate"
+vars = { ENVIRONMENT = "candidate" }
+route = { pattern = "connect-candidate.tooot.app", custom_domain = true }
 
 [env.release]
-  node_compat = true
-  name = "tooot-connect"
-  vars = { ENVIRONMENT = "release" }
-  route = { pattern = "connect.tooot.app/*", zone_name = "tooot.app" }
+node_compat = true
+name = "tooot-connect"
+vars = { ENVIRONMENT = "release" }
+routes = [
+  { pattern = "n61owz4leck.tooot.app", custom_domain = true },
+  { pattern = "z9skyp2f0m.tooot.app", custom_domain = true },
+  { pattern = "nc2dqtyxevj.tooot.app", custom_domain = true },
+  { pattern = "tgl97fgudrf.tooot.app", custom_domain = true },
+  { pattern = "eo2sj0ut2s.tooot.app", custom_domain = true },
+  { pattern = "a75auwihvyi.tooot.app", custom_domain = true },
+  { pattern = "vzkpud5y5b.tooot.app", custom_domain = true },
+  { pattern = "3uivf7yyex.tooot.app", custom_domain = true },
+  { pattern = "pxfoa1wbor.tooot.app", custom_domain = true },
+  { pattern = "3cor5jempc.tooot.app", custom_domain = true },
+  { pattern = "9o32znuepr.tooot.app", custom_domain = true },
+  { pattern = "9ayt1l2dzpi.tooot.app", custom_domain = true },
+  { pattern = "60iu4rz8js.tooot.app", custom_domain = true },
+  { pattern = "dzoa1lbxbv.tooot.app", custom_domain = true },
+  { pattern = "82rpiiqw21.tooot.app", custom_domain = true },
+  { pattern = "fblij1c9gyl.tooot.app", custom_domain = true },
+  { pattern = "wk2x048g8gl.tooot.app", custom_domain = true },
+  { pattern = "9x91yrbtmn.tooot.app", custom_domain = true },
+  { pattern = "dgu5p7eif6.tooot.app", custom_domain = true },
+  { pattern = "uftwyhrkgrh.tooot.app", custom_domain = true },
+  { pattern = "vv5hay15vjk.tooot.app", custom_domain = true },
+  { pattern = "ooj9ihtyur.tooot.app", custom_domain = true },
+  { pattern = "o8r7phzd58.tooot.app", custom_domain = true },
+  { pattern = "pujwyg269s.tooot.app", custom_domain = true },
+  { pattern = "l6yq5nr8lv.tooot.app", custom_domain = true },
+  { pattern = "ocyrlfmdnl.tooot.app", custom_domain = true },
+  { pattern = "rdtpeip5e2.tooot.app", custom_domain = true },
+  { pattern = "ykzb5784js.tooot.app", custom_domain = true },
+  { pattern = "m34z7j5us1i.tooot.app", custom_domain = true },
+  { pattern = "tqsfr0orqa.tooot.app", custom_domain = true },
+  { pattern = "8ncrt0mifa.tooot.app", custom_domain = true },
+  { pattern = "ygce2fdmsm.tooot.app", custom_domain = true },
+  { pattern = "22vk7csljz.tooot.app", custom_domain = true },
+  { pattern = "7mmb6hrih1.tooot.app", custom_domain = true },
+  { pattern = "grla5cpgau.tooot.app", custom_domain = true },
+  { pattern = "0vygyvs4k7.tooot.app", custom_domain = true },
+  { pattern = "1texbe32sf.tooot.app", custom_domain = true },
+  { pattern = "ckwvauiiol.tooot.app", custom_domain = true },
+  { pattern = "qkxryrbpxx.tooot.app", custom_domain = true },
+  { pattern = "ptb19c0ks9g.tooot.app", custom_domain = true },
+  { pattern = "3bpe76o6stg.tooot.app", custom_domain = true },
+  { pattern = "d507ejce9g.tooot.app", custom_domain = true },
+  { pattern = "jpul5v2mqej.tooot.app", custom_domain = true },
+  { pattern = "6m5uxemc79.tooot.app", custom_domain = true },
+  { pattern = "wxbtoo9t3p.tooot.app", custom_domain = true },
+  { pattern = "8qco3d0idh.tooot.app", custom_domain = true },
+  { pattern = "u00c2xiabvf.tooot.app", custom_domain = true },
+  { pattern = "hutkqwrcy8.tooot.app", custom_domain = true },
+  { pattern = "t6vrkzhpzo.tooot.app", custom_domain = true },
+  { pattern = "wy6e529mnb.tooot.app", custom_domain = true },
+  { pattern = "kzzrlfa59pg.tooot.app", custom_domain = true },
+  { pattern = "mmo4sv4a7s.tooot.app", custom_domain = true },
+  { pattern = "u0dishl20k.tooot.app", custom_domain = true },
+  { pattern = "8qyx25bq3u.tooot.app", custom_domain = true },
+  { pattern = "d3mucdzlu1.tooot.app", custom_domain = true },
+  { pattern = "y123m81vsjl.tooot.app", custom_domain = true },
+  { pattern = "51opvzdo6k.tooot.app", custom_domain = true },
+  { pattern = "r4z333th9u.tooot.app", custom_domain = true },
+  { pattern = "q77hl0ggfr.tooot.app", custom_domain = true },
+  { pattern = "bsk1f2wi52g.tooot.app", custom_domain = true },
+  { pattern = "eubnxpv0pz.tooot.app", custom_domain = true },
+  { pattern = "h11pk7qm8i.tooot.app", custom_domain = true },
+  { pattern = "brhxw45vd5.tooot.app", custom_domain = true },
+  { pattern = "vtnvlsrn1z.tooot.app", custom_domain = true },
+  { pattern = "0q5w0hhzb5.tooot.app", custom_domain = true },
+  { pattern = "vq2rz02ayf.tooot.app", custom_domain = true },
+  { pattern = "hml3igfwkq.tooot.app", custom_domain = true },
+  { pattern = "39qs7vhenl.tooot.app", custom_domain = true },
+  { pattern = "5vcv775rug.tooot.app", custom_domain = true },
+  { pattern = "kjom5gr7i3.tooot.app", custom_domain = true },
+  { pattern = "t2kmaoeb5x.tooot.app", custom_domain = true },
+  { pattern = "ni6ow1z11b.tooot.app", custom_domain = true },
+  { pattern = "yvgtoc3d88.tooot.app", custom_domain = true },
+  { pattern = "iax04eatnz.tooot.app", custom_domain = true },
+  { pattern = "esxyu9zujg.tooot.app", custom_domain = true },
+  { pattern = "73xa28n278.tooot.app", custom_domain = true },
+  { pattern = "5x63a8l24k.tooot.app", custom_domain = true },
+  { pattern = "dy1trb0b3sj.tooot.app", custom_domain = true },
+  { pattern = "d4c31j23m8.tooot.app", custom_domain = true },
+  { pattern = "ho76046l0j.tooot.app", custom_domain = true },
+  { pattern = "sw8lj5u2ef.tooot.app", custom_domain = true },
+  { pattern = "z5cn21mew5.tooot.app", custom_domain = true },
+  { pattern = "wxj73nmqwa.tooot.app", custom_domain = true },
+  { pattern = "gdj00dlx98.tooot.app", custom_domain = true },
+  { pattern = "0v76xag64i.tooot.app", custom_domain = true },
+  { pattern = "j35104qduhj.tooot.app", custom_domain = true },
+  { pattern = "l63r7h0ss6.tooot.app", custom_domain = true },
+  { pattern = "e5xdv7t1q0h.tooot.app", custom_domain = true },
+  { pattern = "4icoh8t4c8.tooot.app", custom_domain = true },
+  { pattern = "nbk36jt4sq.tooot.app", custom_domain = true },
+  { pattern = "zi0n0cv4tk.tooot.app", custom_domain = true },
+  { pattern = "o7qkfp3rxu.tooot.app", custom_domain = true },
+  { pattern = "xd2wefzd27.tooot.app", custom_domain = true },
+  { pattern = "rg7e6tsacx.tooot.app", custom_domain = true },
+  { pattern = "9lrq3s4vfm.tooot.app", custom_domain = true },
+  { pattern = "srs9p21lxoh.tooot.app", custom_domain = true },
+  { pattern = "n8xymau42t.tooot.app", custom_domain = true },
+  { pattern = "q5cik283fg.tooot.app", custom_domain = true },
+  { pattern = "68ye9feqs5.tooot.app", custom_domain = true },
+  { pattern = "xjc5anubnv.tooot.app", custom_domain = true },
+]
