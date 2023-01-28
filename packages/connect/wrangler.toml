@@ -13,10 +13,10 @@ vars = { ENVIRONMENT = "development" }
   node_compat = true
   name = "tooot-connect-candidate"
   vars = { ENVIRONMENT = "candidate" }
-  route = { pattern = "connect-candidate.tooot.app", zone_name = "tooot.app" }
+  route = { pattern = "connect-candidate.tooot.app/*", zone_name = "tooot.app" }
 
 [env.release]
   node_compat = true
   name = "tooot-connect"
   vars = { ENVIRONMENT = "release" }
-  route = { pattern = "connect.tooot.app", zone_name = "tooot.app" }
+  route = { pattern = "connect.tooot.app/*", zone_name = "tooot.app" }
