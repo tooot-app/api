@@ -10,7 +10,7 @@ export default {
         ? 'connect-candidate.tooot.app'
         : 'connect.tooot.app'
 
-    if (request.url === `https://${DOMAIN}/verify`) {
+    if (request.url.endsWith('/verify')) {
       return new Response()
     }
 
