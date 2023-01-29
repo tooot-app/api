@@ -4,21 +4,15 @@ main = "./src/index.ts"
 
 node_compat = true
 name = "tooot-connect-development"
-vars = { ENVIRONMENT = "development" }
-
-[dev]
-local_protocol = "https"
 
 [env.candidate]
 node_compat = true
 name = "tooot-connect-candidate"
-vars = { ENVIRONMENT = "candidate" }
 route = { pattern = "connect-candidate.tooot.app", custom_domain = true }
 
 [env.release]
 node_compat = true
 name = "tooot-connect"
-vars = { ENVIRONMENT = "release" }
 routes = [
   { pattern = "n61owz4leck.tooot.app", custom_domain = true },
   { pattern = "z9skyp2f0m.tooot.app", custom_domain = true },
