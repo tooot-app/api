@@ -1,5 +1,6 @@
 import { IRequest, Route, Router, RouterType } from 'itty-router'
 import getDurableObject from './middlewares/getDurableObject'
+import migrate from './routes/migrate'
 import send from './routes/send'
 import subscribe from './routes/subscribe'
 import universal from './routes/universal'
@@ -77,6 +78,8 @@ router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
 router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
 router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
 router.post(`/send${pathGlobal}/:random?`, getDurableObject, send)
+
+router.post('/migrate/:expoToken', migrate) // Without wrapping
 
 router.get('/admin/expoToken/:expoToken', getDurableObject, universal)
 

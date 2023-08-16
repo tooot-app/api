@@ -1,10 +1,11 @@
 {
   "name": "tooot-push",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "author": "xmflsct <me@xmflsct.com>",
   "license": "MIT",
   "scripts": {
     "dev": "wrangler dev",
+    "tunnel": "cloudflared tunnel --url http://localhost:8787",
     "send": "NODE_TLS_REJECT_UNAUTHORIZED=0 node ./scripts/sendPush.js"
   },
   "dependencies": {
