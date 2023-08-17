@@ -6,7 +6,6 @@
 # yarn 3
 /packages/**/.pnp.*
 /packages/**/.yarn/*
-/packages/**/!.yarn/plugins
 /packages/**/!.yarn/releases
 /packages/**/!.yarn/sdks
 /packages/**/!.yarn/versions
