@@ -36,10 +36,12 @@ const pushToExpo = async (
   }
 ): Promise<any> => {
   let toPush
-
+  const wrappedExpoToken = message.context.expoToken.startsWith('ExponentPushToken')
+    ? message.context.expoToken
+    : `ExponentPushToken[${message.context.expoToken}]`
   if (message.details) {
     toPush = {
-      to: message.context.expoToken,
+      to: wrappedExpoToken,
       sound: 'default',
       title: message.details.title,
       subtitle: message.context.accountFull,
@@ -56,7 +58,7 @@ const pushToExpo = async (
     }
   } else {
     toPush = {
-      to: message.context.expoToken,
+      to: wrappedExpoToken,
       sound: 'default',
       title: message.context.accountFull,
       body: '🔔',
