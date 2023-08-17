@@ -1,12 +1,12 @@
-import { IRequest } from 'itty-router'
-import { Env, HeadersSend, ParamsSend, WithDurableObject } from '..'
+import { Buffer } from 'node:buffer'
+import { Env, HeadersSend, ParamsSend, RequestWithDO } from '..'
 import { Account } from '../durableObjects/device'
 import decode from '../utils/decode'
 import logToNR from '../utils/logToNR'
 import pushToExpo from '../utils/pushToExpo'
 
 const send = async (
-  request: ParamsSend & WithDurableObject & IRequest,
+  request: ParamsSend & RequestWithDO,
   env: Env,
   context: ExecutionContext
 ): Promise<Response> => {

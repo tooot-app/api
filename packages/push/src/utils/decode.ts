@@ -1,5 +1,6 @@
 // @ts-ignore
 import createECDH from 'create-ecdh'
+import { Buffer } from 'node:buffer'
 
 export type DecodeData = {
   body: Buffer

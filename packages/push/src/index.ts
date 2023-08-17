@@ -1,10 +1,14 @@
-import { IRequest, Route, Router, RouterType } from 'itty-router'
+import { IRequest, IRequestStrict, Router } from 'itty-router'
 import getDurableObject from './middlewares/getDurableObject'
 import migrate from './routes/migrate'
 import send from './routes/send'
 import subscribe from './routes/subscribe'
 import universal from './routes/universal'
 import handleErrors from './utils/handleErrors'
+
+export type RequestWithDO = {
+  durableObject: DurableObjectStub
+} & IRequestStrict
 
 export type ParamsGlobal = {
   params: { expoToken?: string; instanceUrl?: string; accountId?: string }
@@ -61,23 +65,14 @@ export type Env =
       TOOOT_PUSH_DEVICE_DEV: DurableObjectNamespace
     }
 
-interface CustomRouter extends RouterType {
-  get: Route
-  post: Route
-  delete: Route
-  put: Route
-  all: Route
-}
-const router = <CustomRouter>Router({ base: '/push' })
+const router = Router({ base: '/push' })
 const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
-export type WithDurableObject = { durableObject?: DurableObjectStub }
-
-router.get('/connect/:expoToken', getDurableObject, universal)
-router.post(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
-router.delete(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
-router.put(`/update-decode${pathGlobal}`, getDurableObject, universal)
-router.post(`/send${pathGlobal}/:random?`, getDurableObject, send)
+router.get<ParamsConnect & RequestWithDO>('/connect/:expoToken', getDurableObject, universal)
+router.post<ParamsSubscribe & RequestWithDO>(`/subscribe${pathGlobal}`, getDurableObject, subscribe)
+router.delete<RequestWithDO>(`/unsubscribe${pathGlobal}`, getDurableObject, universal)
+router.put<RequestWithDO>(`/update-decode${pathGlobal}`, getDurableObject, universal)
+router.post<ParamsSend & RequestWithDO>(`/send${pathGlobal}/:random?`, getDurableObject, send)
 
 router.post('/migrate/:expoToken', migrate) // Without wrapping
 
@@ -86,7 +81,7 @@ router.get('/admin/expoToken/:expoToken', getDurableObject, universal)
 router.all('*', (): Response => new Response(null, { status: 404 }))
 
 export default {
-  fetch: (request: IRequest, env: Env, context: ExecutionContext) =>
+  fetch: (request: RequestWithDO, env: Env, context: ExecutionContext) =>
     router
       .handle(request, env, context)
       .catch((err: unknown) => handleErrors('workers - fetch', err, { request, env, context }))
