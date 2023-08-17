@@ -1,8 +1,7 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
-compatibility_date = "2022-11-04"
+compatibility_date = "2023-08-17"
 main = "./src/index.ts"
 
-node_compat = true
 name = "tooot-translate-development"
 vars = {ENVIRONMENT = "development"}
 kv_namespaces = [ 
@@ -10,7 +9,6 @@ kv_namespaces = [
 ]
 
 [env.candidate]
-node_compat = true
 name = "tooot-translate-candidate"
 route = { pattern = "api-candidate.tooot.app/translate", zone_name = "tooot.app" }
 vars = {ENVIRONMENT = "candidate"}
@@ -19,7 +17,6 @@ kv_namespaces = [
 ]
 
 [env.release]
-node_compat = true
 name = "tooot-translate"
 route = { pattern = "api.tooot.app/translate", zone_name = "tooot.app" }
 vars = {ENVIRONMENT = "release"}

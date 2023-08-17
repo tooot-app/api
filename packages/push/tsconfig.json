@@ -10,7 +10,8 @@
     "preserveConstEnums": true,
     "esModuleInterop": true,
     "types": ["@cloudflare/workers-types", "@types/node"],
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "skipLibCheck": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

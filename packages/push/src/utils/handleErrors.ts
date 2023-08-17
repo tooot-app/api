@@ -1,5 +1,5 @@
-import { IRequest } from 'itty-router'
-import { Env, ParamsGlobal, WithDurableObject } from '..'
+import { IRequestStrict } from 'itty-router'
+import { Env } from '..'
 import logToNR from './logToNR'
 import sentryCapture from './sentryCapture'
 
@@ -11,7 +11,9 @@ const handleErrors = (
     env,
     context
   }: {
-    request: ParamsGlobal & WithDurableObject & IRequest
+    request: {
+      durableObject?: DurableObjectStub
+    } & IRequestStrict
     env: Env
     context: Pick<ExecutionContext, 'waitUntil'>
   }

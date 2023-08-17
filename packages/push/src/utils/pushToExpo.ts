@@ -1,5 +1,5 @@
 import { IRequest } from 'itty-router'
-import { Env, WithDurableObject } from '..'
+import { Env } from '..'
 import logToNR from './logToNR'
 import sentryCapture from './sentryCapture'
 

@@ -1,9 +1,8 @@
-import { IRequest } from 'itty-router'
-import { BodySubscribe, Env, ParamsSubscribe, WithDurableObject } from '..'
+import { BodySubscribe, Env, ParamsSubscribe, RequestWithDO } from '..'
 import logToNR from '../utils/logToNR'
 
 const subscribe = async (
-  request: ParamsSubscribe & WithDurableObject & IRequest,
+  request: ParamsSubscribe & RequestWithDO,
   env: Env,
   context: ExecutionContext
 ): Promise<Response> => {

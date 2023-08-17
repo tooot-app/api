@@ -1,5 +1,13 @@
-import { IRequest, Route, Router, RouterType } from 'itty-router'
-import { BodyUpdateDecode, Env, ParamsSend, ParamsSubscribe, ParamsUpdateDecode } from '..'
+import { IRequest, Router } from 'itty-router'
+import {
+  BodyUpdateDecode,
+  Env,
+  ParamsConnect,
+  ParamsSend,
+  ParamsSubscribe,
+  ParamsUpdateDecode,
+  RequestWithDO
+} from '..'
 import handleErrors from '../utils/handleErrors'
 import logToNR from '../utils/logToNR'
 
@@ -43,20 +51,13 @@ export class Device {
   }
 
   fetch = async (request: IRequest) => {
-    interface CustomRouter extends RouterType {
-      get: Route
-      post: Route
-      delete: Route
-      put: Route
-      all: Route
-    }
-    const router = <CustomRouter>Router({ base: '/push' })
+    const router = Router({ base: '/push' })
     const pathGlobal = '/:expoToken/:instanceUrl/:accountId'
 
     // Matching original request
-    router.get(
+    router.get<ParamsConnect & RequestWithDO>(
       '/connect/:expoToken',
-      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
+      async (request): Promise<Response> => {
         this.accounts = (await this.state.storage.get('accounts')) || {}
         if (Object.keys(this.accounts).length === 0) {
           logToNR(this.env.NEW_RELIC_KEY, {
@@ -83,9 +84,9 @@ export class Device {
         return new Response(JSON.stringify({ accounts: Object.keys(this.accounts) }))
       }
     )
-    router.post(
+    router.post<ParamsSubscribe & RequestWithDO>(
       `/subscribe${pathGlobal}`,
-      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
+      async (request): Promise<Response> => {
         this.accounts = (await this.state.storage.get('accounts')) || {}
         await this.state.storage.put({
           accounts: {
@@ -97,9 +98,9 @@ export class Device {
         return new Response()
       }
     )
-    router.delete(
+    router.delete<ParamsSubscribe & RequestWithDO>(
       `/unsubscribe${pathGlobal}`,
-      async (request: ParamsSubscribe & IRequest): Promise<Response> => {
+      async (request): Promise<Response> => {
         this.accounts = (await this.state.storage.get('accounts')) || {}
         delete this.accounts[parseAccount(request.params)]
         await this.state.storage.put({
@@ -109,9 +110,9 @@ export class Device {
         return new Response()
       }
     )
-    router.put(
+    router.put<ParamsUpdateDecode & RequestWithDO>(
       `/update-decode${pathGlobal}`,
-      async (request: ParamsUpdateDecode & IRequest): Promise<Response> => {
+      async (request): Promise<Response> => {
         const body: BodyUpdateDecode = await request.json()
 
         const account = parseAccount(request.params)
@@ -136,9 +137,9 @@ export class Device {
         return new Response()
       }
     )
-    router.post(
+    router.post<ParamsSend & RequestWithDO>(
       `/send${pathGlobal}/:random?`,
-      async (request: ParamsSend & IRequest): Promise<Response> => {
+      async (request): Promise<Response> => {
         const account = parseAccount(request.params)
         const accounts = await this.state.storage.get<Accounts>('accounts', {
           allowConcurrency: true
@@ -218,14 +219,13 @@ export class Device {
       })
     })
     router.post('/migrate/:expoToken', async (request: IRequest): Promise<Response> => {
-      const data = await request.json()
-      console.log('data', data)
+      const data = await request.json<any>()
       await this.state.storage.put(data)
       return new Response(JSON.stringify(data), {
         headers: { 'Content-Type': 'application/json' }
       })
     })
-    router.delete('/migrate/:expoToken', async (request: IRequest): Promise<Response> => {
+    router.delete('/migrate/:expoToken', async (): Promise<Response> => {
       await this.state.storage.deleteAll()
       return new Response()
     })

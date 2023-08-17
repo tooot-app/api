@@ -1,9 +1,8 @@
 account_id = "4b99fe044748e20b67286e12a4f239fb"
-compatibility_date = "2022-11-05"
-compatibility_flags = [ "url_original" ]
+compatibility_date = "2023-08-17"
+compatibility_flags = [ "nodejs_compat" ]
 main = "./src/index.ts"
 
-node_compat = true
 name = "tooot-push-development"
 vars = { ENVIRONMENT = "development" }
 durable_objects = { bindings = [
@@ -13,7 +12,6 @@ durable_objects = { bindings = [
 tag = "v1"
 
 [env.candidate]
-  node_compat = true
   name = "tooot-push-candidate"
   vars = { ENVIRONMENT = "candidate" }
   route = { pattern = "api-candidate.tooot.app/push/*", zone_name = "tooot.app" }
@@ -22,7 +20,6 @@ tag = "v1"
   ] }
 
 [env.release]
-  node_compat = true
   name = "tooot-push"
   vars = { ENVIRONMENT = "release" }
   route = { pattern = "api.tooot.app/push/*", zone_name = "tooot.app" }

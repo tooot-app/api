@@ -1,4 +1,4 @@
-import { IRequest, Route, Router, RouterType } from 'itty-router'
+import { IRequest, IRequestStrict, Route, Router, RouterType } from 'itty-router'
 import checkBody from './middlewares/checkBody'
 import prepareNR from './middlewares/prepareNR'
 import respond from './middlewares/respond'
@@ -37,13 +37,17 @@ export type Env = {
   LANGUAGES: KVNamespace
 }
 
-interface CustomRouter extends RouterType {
-  post: Route
-  all: Route
-}
-const router = <CustomRouter>Router({ base: '/translate' })
+const router = Router({ base: '/translate' })
 
-router.post('/', checkBody, prepareNR, sanitizeBody, useGoogle, useIBM, respond)
+router.post<WithIncoming & WithOutgoing & IRequestStrict>(
+  '/',
+  checkBody,
+  prepareNR,
+  sanitizeBody,
+  useGoogle,
+  useIBM,
+  respond
+)
 router.all('*', () => new Response(null, { status: 404 }))
 
 export default {
