@@ -211,6 +211,25 @@ export class Device {
       return new Response()
     })
 
+    // Migration
+    router.get('/migrate/:expoToken', async (): Promise<Response> => {
+      return new Response(JSON.stringify(Object.fromEntries(await this.state.storage.list())), {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    })
+    router.post('/migrate/:expoToken', async (request: IRequest): Promise<Response> => {
+      const data = await request.json()
+      console.log('data', data)
+      await this.state.storage.put(data)
+      return new Response(JSON.stringify(data), {
+        headers: { 'Content-Type': 'application/json' }
+      })
+    })
+    router.delete('/migrate/:expoToken', async (request: IRequest): Promise<Response> => {
+      await this.state.storage.deleteAll()
+      return new Response()
+    })
+
     // Admin
     router.get('/admin/expoToken/:expoToken', async (): Promise<Response> => {
       return new Response(JSON.stringify(Object.fromEntries(await this.state.storage.list())), {

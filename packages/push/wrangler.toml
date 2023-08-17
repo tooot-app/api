@@ -12,9 +12,6 @@ durable_objects = { bindings = [
 [[migrations]]
 tag = "v1"
 
-[dev]
-  local_protocol = "https"
-
 [env.candidate]
   node_compat = true
   name = "tooot-push-candidate"
